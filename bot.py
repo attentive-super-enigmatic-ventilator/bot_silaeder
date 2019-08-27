@@ -36,9 +36,9 @@ app_id = open('app.txt').read().splitlines()
 sessio = vk.Session(access_token=user_service_access_key)
 api = vk.API(sessio, v=5.101)
 contacts = []
-"""vk_sessio = vk_api.VkApi(loginpassword[0], loginpassword[1], app_id=int(app_id  [0]), scope='wall, photos')
+vk_sessio = vk_api.VkApi(loginpassword[0], loginpassword[1], app_id=int(app_id[0]), scope='wall, photos')
 vk_sessio.auth()
-upload = vk_api.VkUpload(vk_sessio)"""
+upload = vk_api.VkUpload(vk_sessio)
 
 test_image_encodings = []
 quantity_faces = []
@@ -245,7 +245,7 @@ for event in vk_api.longpoll.VkLongPoll(vk_session).listen():
                     print(e)
             continue
         if users[event.user_id] == 1:
-            result = []
+            result = {}
             news = event.text
             flag = False
             photos = api1.messages.getById(message_ids=event.message_id, group_id=183112747)
@@ -268,18 +268,29 @@ for event in vk_api.longpoll.VkLongPoll(vk_session).listen():
                     for j in test_image_encodings:
                         comparing = face_recognition.compare_faces([photos_encoding.known_faces_encodings[i]], j)[0]
                         if comparing:
-                            result.append(i)
                             name = i.split('/')[-1].split('_')
                             name[1] = name[1][:len(name[1])-4]
-                            vko.messages.send(user_id=event.user_id,
-                                              random_id=random.randint(1, 10 ** 9),
-                                              message='Вы хотите отправить сообщение на почту родителям ребенка, ' +
-                                              'который есть на этой фотографии? (' +
-                                              i.split('/')[-1].split('_')[0] + ' ' +
-                                              i.split('/')[-1].split('_')[1][:len(i.split('/')[-1].split('_')[1])-4]
-                                              + ')', keyboard=create_keyb1(['Да', 'Нет']))
+                            try:
+                                d = int(name[1][-1])
+                                name[1] = name[1][:len(name[1]-1)]
+                            except:
+                                pass
+                            try:
+                                result[name[0] + ' ' + name[1]] += 1
+                            except:
+                                result[name[0] + ' ' + name[1]] = 1
                             face = True
                 if face:
+                    maximum = 0
+                    for key in result:
+                        if result[key] > maximum:
+                            maximum = result[key]
+                            firstname, lastname = key.split()
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Вы хотите отправить сообщение на почту родителям ребенка, ' +
+                                              'который есть на этой фотографии? (' + firstname + ' ' + lastname + ')',
+                                              keyboard=create_keyb1(['Да', 'Нет']))
                     continue
             vko.messages.send(user_id=event.user_id,
                               random_id=random.randint(1, 10 ** 9),
