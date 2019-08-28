@@ -223,7 +223,7 @@ for event in vk_api.longpoll.VkLongPoll(vk_session).listen():
             incorrect_command = False
         if users[event.user_id] == 1 and text == 'да':
             google.auth()
-            google.send_to_some(str(name[0] + ' ' + name[1]))
+            google.send_to_some(firstname + ' ' + lastname)
             contacts = google.contacts
             google.clear()
             sendmail(news, glob.glob("photos/*.jpg"))
