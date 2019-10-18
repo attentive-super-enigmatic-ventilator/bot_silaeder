@@ -3,11 +3,6 @@ import glob
 import random
 import urllib.request
 from sys import stderr
-
-import vk
-import vk_api
-from vk_api.longpoll import VkLongPoll
-from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 import mimetypes
 import smtplib
 from email import encoders
@@ -16,24 +11,29 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.audio import MIMEAudio
 from email.mime.multipart import MIMEMultipart
+import json
+
+import vk
+import vk_api
+from vk_api.longpoll import VkLongPoll
+from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from docx import Document
 from docx.shared import Inches
 import face_recognition
 import requests
-import json
 
 import downloading_google_sheet
 import photos_encoding
 
 user_service_access_key = open("user_service_access_key.dat").read().splitlines()[2]
-service_access_key = open('service.dat').read().splitlines()
+service_access_key = open('group_service_access_key.dat').read().splitlines()
 session = vk.Session(access_token=service_access_key)
 api1 = vk.API(session, v=5.101)
 owner_id = open('owner.dat').read().splitlines()
 admins = {str(i) for i in open('admins.dat').read().splitlines()}
 loginpassword = open('login_password.dat').read().splitlines()
 mail1 = open('mail.dat').read().splitlines()
-tokens = open('secret.dat').read().splitlines()
+tokens = open('group_token.dat').read().splitlines()
 vk_session = vk_api.VkApi(token=tokens[0])
 vko = vk_session.get_api()
 app_id = open('app.dat').read().splitlines()
