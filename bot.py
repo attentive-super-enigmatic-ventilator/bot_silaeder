@@ -12,6 +12,7 @@ from email.mime.image import MIMEImage
 from email.mime.audio import MIMEAudio
 from email.mime.multipart import MIMEMultipart
 import json
+import pickle
 
 import vk
 import vk_api
@@ -23,7 +24,7 @@ import face_recognition
 import requests
 
 import downloading_google_sheet
-import photos_encoding
+
 
 user_service_access_key = open("user_service_access_key.dat").read().splitlines()[2]
 service_access_key = open('group_service_access_key.dat').read().splitlines()
@@ -43,6 +44,8 @@ contacts = []
 vk_sessio = vk_api.VkApi(loginpassword[0], loginpassword[1], app_id=int(app_id  [0]), scope='wall, photos')
 vk_sessio.auth()
 upload = vk_api.VkUpload(vk_sessio)
+
+known_faces_encodings = pickle.load(open("photos_prepared_for_face_recognition.dat", "rb"))
 
 test_image_encodings = []
 quantity_faces = []
@@ -269,9 +272,9 @@ for event in vk_api.longpoll.VkLongPoll(vk_session).listen():
                     test_image_encodings.append(test_image_encoding)
                     quantity_faces.append(test_image_locations)
             if not quantity_faces == []:
-                for i in photos_encoding.known_faces_encodings.keys():
+                for i in known_faces_encodings.keys():
                     for j in test_image_encodings:
-                        comparing = face_recognition.compare_faces([photos_encoding.known_faces_encodings[i]], j)[0]
+                        comparing = face_recognition.compare_faces([known_faces_encodings[i]], j)[0]
                         if comparing:
                             name = i.split('/')[-1].split('_')
                             name[1] = name[1][:len(name[1])-4]
