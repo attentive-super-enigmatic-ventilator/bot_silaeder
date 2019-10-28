@@ -85,6 +85,7 @@ def sendmail(text1, files):
                 encoders.encode_base64(file)
             file.add_header('Content-Disposition', 'attachment', filename=filename)
             msg.attach(file)
+    print(contacts)
     # mail.send_message(msg, to_addrs=contacts)
     mail.quit()
 
@@ -161,6 +162,9 @@ for event in vk_api.longpoll.VkLongPoll(vk_session).listen():
             f_mail = False
             users[event.user_id] = 0
             contacts = []
+            for file in os.scandir():
+                if file.name.endswith(".docx"):
+                    os.unlink(file.path)
             folder = 'photos'
             for the_file in os.listdir(folder):
                 file_path = os.path.join(folder, the_file)
@@ -170,6 +174,7 @@ for event in vk_api.longpoll.VkLongPoll(vk_session).listen():
                 except Exception as e:
                     print(e)
             continue
+
         if text == 'нет, спасибо':
             f_group = False
             f_mail = False
