@@ -86,6 +86,7 @@ def send_to_all():
 
 
 def send_to_some(crit):
+    auth()
     global contacts
     crit = [i for i in crit.split()]
     name = []
