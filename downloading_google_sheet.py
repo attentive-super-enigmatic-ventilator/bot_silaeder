@@ -75,6 +75,7 @@ def send_to_children(grade):
 
 def send_to_all():
     global contacts
+    auth()
     for i in range(1, len(sheet)):
         if len(sheet[i][sheet[0].index('e-mail матери')]) > 8:
             contacts.append(sheet[i][sheet[0].index('e-mail матери')])
@@ -82,7 +83,7 @@ def send_to_all():
             contacts.append(sheet[i][sheet[0].index('e-mail отца')])
         if len(sheet[i][sheet[0].index('e-mail ребенка')]) > 8:
             contacts.append(sheet[i][sheet[0].index('e-mail ребенка')])
-        send_to_teachers()
+    send_to_teachers()
 
 
 def send_to_some(crit):
