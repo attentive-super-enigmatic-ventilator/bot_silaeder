@@ -107,7 +107,7 @@ def auth_teachers():
     global sheet1
     sheet1 = client.open('Silaedr').worksheet('контакты учителей')
     sheet1 = sheet1.get_all_values()
-    print(sheet1)
+    # print(sheet1)
 
 def send_to_teachers():
     global  contacts
