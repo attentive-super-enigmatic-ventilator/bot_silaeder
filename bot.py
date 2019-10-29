@@ -490,7 +490,7 @@ for event in vk_api.longpoll.VkLongPoll(vk_session).listen():
             vko.messages.send(user_id=event.user_id,
                               random_id=random.randint(1, 10 ** 9),
                               message='Здравствуйте, дорогой учитель! Это функция "Служебная записка". Вы должны ответить на несколько вопросов про это мероприятие, и бот пришлёт вам на почту документ.'+'\n'+
-                              '\n'+'Что это за мероприятие?')
+                              '\n'+'Что это за мероприятие? Отправьте мне текстовое сообщение')
             users[event.user_id] = 73
             continue
         if users[event.user_id] == 73:
