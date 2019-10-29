@@ -368,8 +368,13 @@ for event in vk_api.longpoll.VkLongPoll(vk_session).listen():
             downloading_google_sheet.auth()
             for i in range(len(text)):
                 try:
-                    grade = str(int(text[i])) + ' '
-                    grade += text[i+2].upper()
+                    grade = str(int(text[i]))
+                    try:
+                        a = str(int(text[i+1]))
+                        grade += a
+                        grade += ' ' + text[i+3].upper()
+                    except:
+                        grade += text[i+2].upper()
                     break
                 except:
                     pass
