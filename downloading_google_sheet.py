@@ -91,7 +91,7 @@ def send_to_some(crit):
     global contacts
     crit = [i for i in crit.split()]
     name = []
-    print(crit)
+    # print(crit)
     for i in range(len(crit)):
         if crit[i][0].isupper():
             name.append(crit[i])
