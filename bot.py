@@ -155,7 +155,7 @@ while True:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Отправка отменена! Обращайтесь, когда появятся новости!',
-                                      keyboard=create_keyb1(['Отправить', 'help']))
+                                      keyboard=base)
                     news = ''
                     incorrect_command = False
                     f_group = False
@@ -529,7 +529,7 @@ while True:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Кто будет участвовать в этом мероприятии?',
-                                      keyboard=create_keyb(['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '9 Л', '10 С']))
+                                      keyboard=create_keyb1(['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '9 Л', '10 С']))
 
                     document.add_paragraph('3)Участники: ' + '\n')
                     n = 1  # Кол-во участников, посмотреть по таблице
