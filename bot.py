@@ -628,7 +628,7 @@ while True:
                                               'далее следуйте моим указаниям' + '\n' +
                                               '- напишите мне "Привет", и я поздороваюсь с Вами', keyboard=base)
             
-            else:
+            elif str(event.user_id) not in admins and event.type == vk_api.longpoll.VkEventType.MESSAGE_NEW and event.to_me:
                 vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Извините, пока что я общаюсь только с учителями Силаэдра, чьи ID есть в моей базе данных.')
