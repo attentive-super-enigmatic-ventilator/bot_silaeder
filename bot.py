@@ -619,14 +619,19 @@ while True:
                     incorrect_command = False
 
                 if incorrect_command:
+                    
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Извините, я Вас не понимаю. ' + '\n' +
                                               'Мои функции:' + '\n' +
                                               '- напишите мне "Отправить" для автоматической рассылки новостей, ' +
                                               'далее следуйте моим указаниям' + '\n' +
-                                              '- напишите мне "Привет", и я поздороваюсь с Вами',
-                                      keyboard=base)
+                                              '- напишите мне "Привет", и я поздороваюсь с Вами', keyboard=base)
+            
+            else:
+                vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Извините, пока что я общаюсь только с учителями Силаэдра, чьи ID есть в моей базе данных.')
 
     except Exception as er:
         print(er)
