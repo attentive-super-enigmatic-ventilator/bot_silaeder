@@ -6,13 +6,14 @@ import datetime
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('authorization_data_for_google_api.json', scope)
 contacts = []
+google_sheet_name = open("google_sheet_name.dat").read().splitlines()
 d = {0:'Понедельник', 1:'Вторник', 2:'Среда', 3:'Четверг', 4:'Пятница', 5:'Суббота', 6:'Воскресенье'}
 
 def auth():
     global sheet
     global client
     client = gspread.authorize(creds)
-    sheet = client.open('Silaedr').worksheet('контакты учеников')
+    sheet = client.open(google_sheet_name).worksheet('контакты учеников')
     sheet = sheet.get_all_values()
 
     
@@ -104,7 +105,7 @@ def send_to_some(crit):
 
 def auth_teachers():
     global sheet1
-    sheet1 = client.open('Silaedr').worksheet('контакты учителей')
+    sheet1 = client.open(google_sheet_name).worksheet('контакты учителей')
     sheet1 = sheet1.get_all_values()
 
 
@@ -119,55 +120,62 @@ def check_timetable(text):
     auth()
     global sheet2
     sum = ''
-    sheet2 = client.open('Silaedr').worksheet('Расписание на 2018-19 год')
-    for i in sheet2.get_all_records():
-        if i[' '] != '':
-            sum = sum + i[' ']+ ':' + '\n'
-        elif i[text.upper()] != '':
-            sum = sum + '  ' + i[text.upper()] + '\n'
+    sheet2 = client.open(google_sheet_name).worksheet('Расписание 2019')
+    index = sheet2.get_all_values()[1].index(text.upper())
+    for i in sheet2.get_all_values():
+        if i[0] != "" and i[0] != "," and i[0] != "ДНЕВНОЕ ОТДЕЛЕНИЕ":
+            sum = sum + i[0] + "\n"
+        if i[index] != '':
+            sum = sum + '  ' + i[index] + "\n"
     return sum
+
+
+s = {0: 'пн', 1: 'вт', 2: 'ср', 3: 'чт', 4: 'пт', 5: 'сб', 6: 'вс'}
 
 
 def today(text):
     auth()
+    text = text.upper()
     global sheet2
     sum = ''
     date = datetime.datetime.today().weekday()
-    sheet2 = client.open('Silaedr').worksheet('Расписание на 2018-19 год')
+    sheet2 = client.open(google_sheet_name).worksheet('Расписание 2019').get_all_values()
     flag = False
     f = False
-    for i in sheet2.get_all_records():
-
-        if i[' '] == d[date]:
-            sum = sum + i[' ']+ ':' + '\n'
+    j = sheet2[1].index(text)
+    day = s[date]
+    for e in sheet2:
+        if day in e[0]:
             f = True
-        elif i[' '] == d[date+1]:
-            flag = True
-        elif i[' '] != d[date] and flag:
+            sum += e[0] + ': ' + '\n'
+        if s[date+1] in e[0]:
             break
-        elif i[text.upper()] != '' and f:
-            sum = sum + '  ' + i[text.upper()] + '\n'
+        if f and e[j] != '':
+            sum += e[j] + '\n'
+    if sum == '':
+        sum = 'Сегодня нет уроков!'
     return sum
 
 
 def tomorrow(text):
     auth()
+    text = text.upper()
     global sheet2
     sum = ''
-    date = (datetime.datetime.today().weekday()+1)%7
-    sheet2 = client.open('Silaedr').worksheet('Расписание на 2018-19 год')
+    date = (datetime.datetime.today().weekday() + 1)%7
+    sheet2 = client.open(google_sheet_name).worksheet('Расписание 2019').get_all_values()
     flag = False
     f = False
-    for i in sheet2.get_all_records():
-
-        if i[' '] == d[date]:
-            sum = sum + i[' '] + ':' + '\n'
+    j = sheet2[1].index(text)
+    day = s[date]
+    for e in sheet2:
+        if day in e[0]:
             f = True
-        elif i[' '] == d[date + 1]:
-            flag = True
-        elif i[' '] != d[date] and flag:
+            sum += e[0] + ': ' + '\n'
+        if s[date + 1] in e[0]:
             break
-        elif i[text.upper()] != '' and f:
-            sum = sum + '  ' + i[text.upper()] + '\n'
+        if f and e[j] != '':
+            sum += e[j] + '\n'
+    if sum == '':
+        sum = 'Завтра нет уроков!'
     return sum
-
