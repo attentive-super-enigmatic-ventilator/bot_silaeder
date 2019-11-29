@@ -84,7 +84,6 @@ def sendmail(text1, files):
                 encoders.encode_base64(file)
             file.add_header('Content-Disposition', 'attachment', filename=filename)
             msg.attach(file)
-    print(contacts)
     # mail.send_message(msg, to_addrs=contacts)
     mail.quit()
 

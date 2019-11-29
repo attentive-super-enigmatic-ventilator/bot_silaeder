@@ -95,7 +95,6 @@ def send_to_some(crit):
     for i in range(len(crit)):
         if crit[i][0].isupper():
             name.append(crit[i])
-    print(name, file=stderr)
     j = sheet[0].index('e-mail матери')
     for i in range(1, len(sheet)):
         if name[1][:len(name[1])-2] in sheet[i][sheet[0].index('Фамилия')]:
