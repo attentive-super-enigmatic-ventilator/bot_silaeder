@@ -89,7 +89,6 @@ def sendmail(text1, files):
     mail.quit()
 
 
-# sendmail('тест', ['C:/Users/user/Desktop/bot_silaedr/secret.txt', 'C:/Users/user/Desktop/bot_silaedr/1.jpg'])
 flag = False
 base = VkKeyboard(one_time=True)
 base.add_button('Отправить', color=VkKeyboardColor.POSITIVE)

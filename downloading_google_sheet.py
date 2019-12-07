@@ -170,4 +170,3 @@ def tomorrow(text):
         elif i[text.upper()] != '' and f:
             sum = sum + '  ' + i[text.upper()] + '\n'
     return sum
-
