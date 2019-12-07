@@ -84,7 +84,6 @@ def sendmail(text1, files):
                 encoders.encode_base64(file)
             file.add_header('Content-Disposition', 'attachment', filename=filename)
             msg.attach(file)
-    # print(contacts)
     # mail.send_message(msg, to_addrs=contacts)
     mail.quit()
 
@@ -367,7 +366,7 @@ while True:
                                               ' контактам, то нажмите на кнопку "Отправить ранее выбранным контактам".' +
                                               '\n' + 'Для отмены отправки нажмите на кнопку "Отменить отправку"',
                                       keyboard=create_keyb(
-                                          ['5 С', '6 С', '7 С', 'new_line', '7 Т', '8 Л', '9 С', 'new_line', 'Учителям',
+                                          ['5 С', '6 С', '7 С', '8 С', 'new_line', '8 Т', '8 Л', '10 С', 'new_line', 'Учителям',
                                            'Отправить ранее выбранным контактам']))
                     continue
                 if users[event.user_id] == 3:
@@ -421,8 +420,9 @@ while True:
                                                   'выбранным контактам, то нажмите на кнопку "Отправить ранее выбранным контактам".' +
                                                   '\n' + 'Для отмены отправки нажмите на кнопку "Отменить отправку"',
                                           keyboard=create_keyb(
-                                              ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '9 Л', '10 С',
-                                               'new_line', 'Учителям', 'Отправить ранее выбранным контактам']))
+                                              ['5 С', '6 С', '7 С', '8 С', 'new_line', '8 Т', '8 Л', '10 С', 'new_line',
+                                               'Учителям',
+                                               'Отправить ранее выбранным контактам']))
                 if text == 'почта' and users[event.user_id] == 2 or one_more_flag:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
@@ -432,7 +432,7 @@ while True:
                                               '"маме <Имя ребенка> <Фамилия ребенка>" или ' +
                                               '"отцу <Имя ребенка> <Фамилия ребенка>".',
                                       keyboard=create_keyb(
-                                          ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '9 Л', '10 С', 'new_line',
+                                          ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
                                            'Учителям', 'Абсолютно всем']))
                     users[event.user_id] = 3
                     incorrect_command = False
@@ -541,7 +541,7 @@ while True:
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Кто будет участвовать в этом мероприятии?',
                                       keyboard=create_keyb1(
-                                          ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '9 Л', '10 С']))
+                                          ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С']))
 
                     document.add_paragraph('3)Участники: ' + '\n')
                     n = 1  # Кол-во участников, посмотреть по таблице
@@ -585,8 +585,8 @@ while True:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Кто еще будет участвовать в этом мероприятии?',
-                                      keyboard=create_keyb(
-                                          ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '9 Л', '10 С', 'new_line',
+                                      keyboard=create_keyb1(
+                                          ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
                                            'Все участники уже перечислены']))
                     incorrect_command = False
 
@@ -649,7 +649,6 @@ while True:
                 if str(event.user_id) not in users:
                     users[str(event.user_id)] = 0
                 text = event.text.lower()
-                print(text)
                 inf = (vko.users.get(user_ids=event.user_id)[0])
                 if 'привет' in text or 'начать' in text:
                     if vko.users.get(user_ids=event.user_id, fields=['sex'])[0]['sex'] == 2:
@@ -683,18 +682,42 @@ while True:
                                           message=sum,
                                           keyboard=create_keyb1(['Узнать расписание']))
 
+                if users[str(event.user_id)] == 2:
+                    if text in ["5с", "6с", "7с", "8с", "8т", "8л","10с"]:
+                        sum = downloading_google_sheet.today(text=text)
+                        vko.messages.send(user_id=event.user_id,
+                                          random_id=random.randint(1, 109),
+                                          message=sum,
+                                          keyboard=create_keyb1(['Узнать расписание']))
 
+                if users[str(event.user_id)] == 3:
+                    if text in ["5с", "6с", "7с", "8с", "8т", "8л","10с"]:
+                        sum = downloading_google_sheet.tomorrow(text=text)
+                        vko.messages.send(user_id=event.user_id,
+                                          random_id=random.randint(1, 109),
+                                          message=sum,
+                                          keyboard=create_keyb1(['Узнать расписание']))
+
+                if text == "сегодня":
+                    users[str(event.user_id)] = 2
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 109),
+                                      message='Расписание для какого класса вас интересует?',
+                                      keyboard=create_keyb2(["5С", "6С", "7С", "new_line", "8С", "8Л", "8Т", "10С"]))
+
+                if text == "завтра":
+                    users[str(event.user_id)] = 3
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 109),
+                                      message='Расписание для какого класса вас интересует?',
+                                      keyboard=create_keyb2(["5С", "6С", "7С", "new_line", "8С", "8Л", "8Т", "10С"]))
 
                 if text == "вся неделя":
                     users[str(event.user_id)] = 1
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 109),
                                       message='Расписание для какого класса вас интересует?',
-                                      keyboard=create_keyb2(["5С", "6С", "7С","new_line", "8С", "10С"]))
-
-
-
-
+                                      keyboard=create_keyb2(["5С", "6С", "7С", "new_line", "8С", "8Л", "8Т", "10С"]))
 
     except Exception as er:
         print(er)
