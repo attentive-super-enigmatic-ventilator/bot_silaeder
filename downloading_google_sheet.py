@@ -1,4 +1,3 @@
-from sys import stderr
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import datetime
@@ -6,7 +5,7 @@ import datetime
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('authorization_data_for_google_api.json', scope)
 contacts = []
-google_sheet_name = open("google_sheet_name.dat").read().splitlines()
+google_sheet_name = open("google_sheet_name.dat").read().splitlines()[0]
 d = {0:'Понедельник', 1:'Вторник', 2:'Среда', 3:'Четверг', 4:'Пятница', 5:'Суббота', 6:'Воскресенье'}
 
 def auth():
