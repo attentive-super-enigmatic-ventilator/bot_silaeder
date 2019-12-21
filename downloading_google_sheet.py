@@ -2,6 +2,8 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import datetime
 
+import pickle
+
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('authorization_data_for_google_api.json', scope)
 contacts = []
@@ -115,12 +117,11 @@ def send_to_teachers():
 
 
 def check_timetable(text):
-    auth()
     global sheet2
     sum = ''
-    sheet2 = client.open(google_sheet_name).worksheet('Расписание 2019')
-    index = sheet2.get_all_values()[1].index(text.upper())
-    for i in sheet2.get_all_values():
+    sheet2 = pickle.load(open("google_sheets_data.dat", "rb"))
+    index = sheet2[1].index(text.upper())
+    for i in sheet2:
         if i[0] != "" and i[0] != "," and i[0] != "ДНЕВНОЕ ОТДЕЛЕНИЕ":
             sum = sum + i[0] + "\n"
         if i[index] != '':
@@ -132,12 +133,11 @@ s = {0: 'пн', 1: 'вт', 2: 'ср', 3: 'чт', 4: 'пт', 5: 'сб', 6: 'вс'
 
 
 def today(text):
-    auth()
     text = text.upper()
     global sheet2
     sum = ''
     date = datetime.datetime.today().weekday()
-    sheet2 = client.open(google_sheet_name).worksheet('Расписание 2019').get_all_values()
+    sheet2 = pickle.load(open("google_sheets_data.dat", "rb"))
     flag = False
     f = False
     j = sheet2[1].index(text)
@@ -156,12 +156,11 @@ def today(text):
 
 
 def tomorrow(text):
-    auth()
     text = text.upper()
     global sheet2
     sum = ''
     date = (datetime.datetime.today().weekday() + 1)%7
-    sheet2 = client.open(google_sheet_name).worksheet('Расписание 2019').get_all_values()
+    sheet2 = pickle.load(open("google_sheets_data.dat", "rb"))
     flag = False
     f = False
     j = sheet2[1].index(text)
