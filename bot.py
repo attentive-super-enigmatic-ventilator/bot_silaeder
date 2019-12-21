@@ -1,6 +1,8 @@
 import os
 import glob
 import random
+from random import random as rd
+from hashlib import sha1
 import urllib.request
 from sys import stderr
 import mimetypes
@@ -618,12 +620,13 @@ while True:
                 if users[event.user_id] == 78:
                     event_responsible = event.text  # Ответ пользователя на вопрос про участников события.
                     document.add_paragraph('\n5)Ответственный: ' + event_responsible)
-                    document.save(sha1(str(random()).encode('utf-8')).hexdigest() + '.docx')
+                    report_file_name = sha1(str(rd()).encode('utf-8')).hexdigest() + '.docx'
+                    document.save(report_file_name)
                     upload_url = vko.docs.getMessagesUploadServer(type='doc', peer_id='489061359')['upload_url']
-                    response = requests.post(upload_url, files={'file': open(sha1(str(random()).encode('utf-8')).hexdigest() + '.docx', 'rb')})
+                    response = requests.post(upload_url, files={'file': open(report_file_name, 'rb')})
                     result = json.loads(response.text)
                     file = result['file']
-                    json = vko.docs.save(file=file, title='Служебная_записка', tags=[])
+                    json = vko.docs.save(file=file, title=sha1(str(rd()).encode('utf-8')).hexdigest(), tags=[])
 
                     owner_id1 = json['doc']['owner_id']
                     doc_id = json['doc']['id']
