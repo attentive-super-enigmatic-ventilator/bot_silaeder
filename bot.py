@@ -639,6 +639,7 @@ while True:
                                       message='Держите!',
                                       attachment=attach, keyboard=base)
                     incorrect_command = False
+                    users[event.user_id] = 0
 
                 if incorrect_command:
                     vko.messages.send(user_id=event.user_id,
