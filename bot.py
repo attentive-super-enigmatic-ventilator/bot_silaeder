@@ -1,4 +1,4 @@
-import os
+import os, os.path
 import glob
 import random
 from random import random as rd
@@ -528,7 +528,7 @@ while True:
                     continue
 
                 if users[event.user_id] == 74:
-                    event_date = event.text  # Ответ пользователя на вопрос про дату события
+                    event_date = event.text
                     document.add_paragraph('1)Дата мероприятия: ' + event_date)
                     users[event.user_id] = 75
                     vko.messages.send(user_id=event.user_id,
@@ -537,7 +537,7 @@ while True:
                     continue
 
                 if users[event.user_id] == 75:
-                    event_place = event.text  # Ответ пользователя на вопрос про место события.
+                    event_place = event.text
                     document.add_paragraph('2)Место проведения: ' + event_place)
                     users[event.user_id] = 76
                     vko.messages.send(user_id=event.user_id,
@@ -547,7 +547,7 @@ while True:
                                           ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С']))
 
                     document.add_paragraph('3)Участники: ' + '\n')
-                    n = 1  # Кол-во участников, посмотреть по таблице
+                    n = 1
                     table = document.add_table(rows=n, cols=5)
                     hdr_cells = table.rows[0].cells
                     hdr_cells[0].text = 'Класс'
@@ -573,52 +573,62 @@ while True:
                     continue
                 elif users[event.user_id] == 76:
                     downloading_google_sheet.auth()
+                    fl = False
                     for i in range(len(downloading_google_sheet.sheet)):
                         if downloading_google_sheet.sheet[i][0] == event.text:
+                            fl = True
                             row_cells = table.add_row().cells
-                            row_cells[0].text = event.text  # взятая из таблицы информация о каждом участнике
-                            row_cells[1].text = downloading_google_sheet.sheet[i][
-                                2]  # взятая из таблицы информация о каждом участнике
-                            row_cells[2].text = downloading_google_sheet.sheet[i][
-                                1]  # взятая из таблицы информация о каждом участнике
-                            row_cells[3].text = downloading_google_sheet.sheet[i][
-                                3]  # взятая из таблицы информация о каждом участнике
-                            row_cells[4].text = downloading_google_sheet.sheet[i][
-                                4]  # взятая из таблицы информация о каждом участнике
-                    vko.messages.send(user_id=event.user_id,
-                                      random_id=random.randint(1, 10 ** 9),
-                                      message='Кто еще будет участвовать в этом мероприятии?',
-                                      keyboard=create_keyb1(
-                                          ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
-                                           'Все участники уже перечислены']))
+                            row_cells[0].text = event.text
+                            row_cells[1].text = downloading_google_sheet.sheet[i][2]
+                            row_cells[2].text = downloading_google_sheet.sheet[i][1]
+                            row_cells[3].text = downloading_google_sheet.sheet[i][3]
+                            row_cells[4].text = downloading_google_sheet.sheet[i][4]
+                    if fl:
+                        vko.messages.send(user_id=event.user_id,
+                                          random_id=random.randint(1, 10 ** 9),
+                                          message='Кто еще будет участвовать в этом мероприятии?',
+                                          keyboard=create_keyb1(
+                                              ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
+                                               'Все участники уже перечислены']))
+                    else:
+                        vko.messages.send(user_id=event.user_id,
+                                          random_id=random.randint(1, 10 ** 9),
+                                          message='Используйте кнопки ниже, я Вас не понимаю!', keyboard=create_keyb1(
+                                              ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
+                                               'Все участники уже перечислены']))
                     incorrect_command = False
 
                 if users[event.user_id] == 77:
-                    numb = [int(i) for i in event.text.split()]
-                    document.add_paragraph('4)Учителя:')
-                    k = 1  # Кол-во учителей, посмотреть по таблице
-                    table = document.add_table(rows=k, cols=5)
-                    hdr_cells = table.rows[0].cells
-                    hdr_cells[0].text = 'Номер'
-                    hdr_cells[1].text = 'Имя'
-                    hdr_cells[2].text = 'Фамилия'
-                    hdr_cells[3].text = 'Отчество'
-                    hdr_cells[4].text = 'Предмет'
-                    for i in range(len(numb)):
-                        row_cells = table.add_row().cells
-                        row_cells[0].text = str(i + 1)  # взятая из таблицы информация о каждом учителе
-                        row_cells[1].text = downloading_google_sheet.sheet1[numb[i] + 1][1]  # взятая из таблицы информация о каждом учителе
-                        row_cells[2].text = downloading_google_sheet.sheet1[numb[i] + 1][0]  # взятая из таблицы информация о каждом учителе
-                        row_cells[3].text = downloading_google_sheet.sheet1[numb[i] + 1][2]  # взятая из таблицы информация о каждом учителе
-                        row_cells[4].text = downloading_google_sheet.sheet1[numb[i] + 1][3]  # взятая из таблицы информация о каждом учителе
-                    users[event.user_id] = 78
-                    vko.messages.send(user_id=event.user_id,
-                                      random_id=random.randint(1, 10 ** 9),
-                                      message='Кто будет ответственным за это мероприятие?')
+                    try:
+                        numb = [int(i) for i in event.text.split()]
+                        document.add_paragraph('4)Учителя:')
+                        k = 1
+                        table = document.add_table(rows=k, cols=5)
+                        hdr_cells = table.rows[0].cells
+                        hdr_cells[0].text = 'Номер'
+                        hdr_cells[1].text = 'Имя'
+                        hdr_cells[2].text = 'Фамилия'
+                        hdr_cells[3].text = 'Отчество'
+                        hdr_cells[4].text = 'Предмет'
+                        for i in range(len(numb)):
+                            row_cells = table.add_row().cells
+                            row_cells[0].text = str(i + 1)
+                            row_cells[1].text = downloading_google_sheet.sheet1[numb[i] + 1][1]
+                            row_cells[2].text = downloading_google_sheet.sheet1[numb[i] + 1][0]
+                            row_cells[3].text = downloading_google_sheet.sheet1[numb[i] + 1][2]
+                            row_cells[4].text = downloading_google_sheet.sheet1[numb[i] + 1][3]
+                        users[event.user_id] = 78
+                        vko.messages.send(user_id=event.user_id,
+                                          random_id=random.randint(1, 10 ** 9),
+                                          message='Кто будет ответственным за это мероприятие?')
+                    except:
+                        vko.messages.send(user_id=event.user_id,
+                                          random_id=random.randint(1, 10 ** 9),
+                                          message='Неправильный формат ввода! Отправьте мне номера учителей через пробел.')
                     incorrect_command = False
                     continue
                 if users[event.user_id] == 78:
-                    event_responsible = event.text  # Ответ пользователя на вопрос про участников события.
+                    event_responsible = event.text
                     document.add_paragraph('\n5)Ответственный: ' + event_responsible)
                     report_file_name = sha1(str(rd()).encode('utf-8')).hexdigest() + '.docx'
                     document.save(report_file_name)
@@ -626,10 +636,10 @@ while True:
                     response = requests.post(upload_url, files={'file': open(report_file_name, 'rb')})
                     result = json.loads(response.text)
                     file = result['file']
-                    json = vko.docs.save(file=file, title=sha1(str(rd()).encode('utf-8')).hexdigest(), tags=[])
+                    json1 = vko.docs.save(file=file, title=sha1(str(rd()).encode('utf-8')).hexdigest(), tags=[])
 
-                    owner_id1 = json['doc']['owner_id']
-                    doc_id = json['doc']['id']
+                    owner_id1 = json1['doc']['owner_id']
+                    doc_id = json1['doc']['id']
                     attach = 'doc' + str(owner_id1) + '_' + str(doc_id)
 
                     vk_session = vk_api.VkApi(token=tokens[0])
@@ -638,6 +648,8 @@ while True:
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Держите!',
                                       attachment=attach, keyboard=base)
+
+                    os.remove(report_file_name)
                     incorrect_command = False
                     users[event.user_id] = 0
 
@@ -649,7 +661,7 @@ while True:
                                               '- напишите мне "Отправить" для автоматической рассылки новостей, ' +
                                               'далее следуйте моим указаниям' + '\n' +
                                               '- напишите мне "Привет", и я поздороваюсь с Вами', keyboard=base)
-
+                    users
             elif event.type == vk_api.longpoll.VkEventType.MESSAGE_NEW and event.to_me and str(event.user_id) not in admins:
                 if str(event.user_id) not in users:
                     users[str(event.user_id)] = 0
