@@ -1,18 +1,23 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('JSON.json', scope)
-contacts = []
+import datetime
 
+import pickle
+
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+creds = ServiceAccountCredentials.from_json_keyfile_name('authorization_data_for_google_api.json', scope)
+contacts = []
+google_sheet_name = open("google_sheet_name.dat").read().splitlines()[0]
+d = {0:'Понедельник', 1:'Вторник', 2:'Среда', 3:'Четверг', 4:'Пятница', 5:'Суббота', 6:'Воскресенье'}
 
 def auth():
     global sheet
     global client
     client = gspread.authorize(creds)
-    sheet = client.open('Silaedr').worksheet('контакты учеников')
+    sheet = client.open(google_sheet_name).worksheet('контакты учеников')
     sheet = sheet.get_all_values()
 
-
+    
 def clear():
     global contacts
     contacts = []
@@ -40,8 +45,6 @@ def check(a, b):
                 d[i][j] = d[i - 1][j - 1]
             else:
                 d[i][j] = min(d[i - 1][j - 1], d[i - 1][j], d[i][j - 1]) + 1
-    # for i in range(len(d)):
-    #    print(d[i])
     f = d[-1][-1]
     return f
 
@@ -74,6 +77,7 @@ def send_to_children(grade):
 
 def send_to_all():
     global contacts
+    auth()
     for i in range(1, len(sheet)):
         if len(sheet[i][sheet[0].index('e-mail матери')]) > 8:
             contacts.append(sheet[i][sheet[0].index('e-mail матери')])
@@ -81,18 +85,17 @@ def send_to_all():
             contacts.append(sheet[i][sheet[0].index('e-mail отца')])
         if len(sheet[i][sheet[0].index('e-mail ребенка')]) > 8:
             contacts.append(sheet[i][sheet[0].index('e-mail ребенка')])
-        send_to_teachers()
+    send_to_teachers()
 
 
 def send_to_some(crit):
+    auth()
     global contacts
     crit = [i for i in crit.split()]
     name = []
-    print(crit)
     for i in range(len(crit)):
         if crit[i][0].isupper():
             name.append(crit[i])
-    print(name)
     j = sheet[0].index('e-mail матери')
     for i in range(1, len(sheet)):
         if name[1][:len(name[1])-2] in sheet[i][sheet[0].index('Фамилия')]:
@@ -100,11 +103,76 @@ def send_to_some(crit):
             break
 
 
-def send_to_teachers():
-    sheet1 = client.open('Silaedr').worksheet('контакты учителей')
+def auth_teachers():
+    global sheet1
+    sheet1 = client.open(google_sheet_name).worksheet('контакты учителей')
     sheet1 = sheet1.get_all_values()
-    print(sheet1)
-    global contacts
-    for i in range(2, len(sheet1)):
-        contacts.append(sheet1[i][sheet1[0].index('e-mail')])
-    print(contacts)
+
+
+def send_to_teachers():
+    global  contacts
+    auth_teachers()
+    for e in sheet1:
+        contacts.append(e[5])
+
+
+def check_timetable(text):
+    global sheet2
+    sum = ''
+    sheet2 = pickle.load(open("google_sheets_data.dat", "rb"))
+    index = sheet2[1].index(text.upper())
+    for i in sheet2:
+        if i[0] != "" and i[0] != "," and i[0] != "ДНЕВНОЕ ОТДЕЛЕНИЕ":
+            sum = sum + i[0] + "\n"
+        if i[index] != '':
+            sum = sum + '  ' + i[index] + "\n"
+    return sum
+
+
+s = {0: 'пн', 1: 'вт', 2: 'ср', 3: 'чт', 4: 'пт', 5: 'сб', 6: 'вс'}
+
+
+def today(text):
+    text = text.upper()
+    global sheet2
+    sum = ''
+    date = datetime.datetime.today().weekday()
+    sheet2 = pickle.load(open("google_sheets_data.dat", "rb"))
+    flag = False
+    f = False
+    j = sheet2[1].index(text)
+    day = s[date]
+    for e in sheet2:
+        if day in e[0]:
+            f = True
+            sum += e[0] + ': ' + '\n'
+        if s[date+1] in e[0]:
+            break
+        if f and e[j] != '':
+            sum += e[j] + '\n'
+    if sum == '':
+        sum = 'Сегодня нет уроков!'
+    return sum
+
+
+def tomorrow(text):
+    text = text.upper()
+    global sheet2
+    sum = ''
+    date = (datetime.datetime.today().weekday() + 1)%7
+    sheet2 = pickle.load(open("google_sheets_data.dat", "rb"))
+    flag = False
+    f = False
+    j = sheet2[1].index(text)
+    day = s[date]
+    for e in sheet2:
+        if day in e[0]:
+            f = True
+            sum += e[0] + ': ' + '\n'
+        if s[date + 1] in e[0]:
+            break
+        if f and e[j] != '':
+            sum += e[j] + '\n'
+    if sum == '':
+        sum = 'Завтра нет уроков!'
+    return sum
