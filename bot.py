@@ -456,7 +456,7 @@ while True:
                     users[event.user_id] = 3
                     incorrect_command = False
                     one_more_flag = False
-                if text == 'опубликовать новость' and users[event.user_id] == 2:
+                if text == 'опубликовать новость' and users[event.user_id] == 1001:
                     photos = glob.glob("photos/*.jpg")
                     if len(photos) != 0:
                         photo_list = upload.photo_wall(photos)
@@ -500,6 +500,7 @@ while True:
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Подтвердите публикацию новости',
                                       keyboard=create_keyb(['Опубликовать новость']))
+                    users[event.user_id] = 1001
                     incorrect_command = False
                     continue
                 if text == 'сайт' and users[event.user_id] == 2:
@@ -516,6 +517,13 @@ while True:
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Я Вас не понимаю, используйте кнопки ниже.',
                                       keyboard=create_keyb(['Группа ВК', 'Почта']))
+                    incorrect_command = False
+                    continue
+                if users[event.user_id] == 1001:
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Я Вас не понимаю, используйте кнопки ниже.',
+                                      keyboard=create_keyb(['Опубликовать новость']))
                     incorrect_command = False
                     continue
                 if text == 'help' or text == 'помощь' or text == '/start' or text == '/help' or text == 'начать':
