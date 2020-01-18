@@ -372,7 +372,7 @@ while True:
                                           message='Я Вас не понимаю, используйте кнопки ниже!',
                                           keyboard=create_keyb(['Родителям(' + grade + ')', 'Ученикам(' + grade + ')',
                                                                 'Всем(' + grade + ')']))
-
+                        incorrect_command = False
                     if x:
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
