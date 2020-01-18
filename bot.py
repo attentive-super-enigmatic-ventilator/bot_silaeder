@@ -494,19 +494,30 @@ while True:
                             except Exception as e:
                                 print(e)
                     incorrect_command = False
+                    continue
                 if text == 'группа вк' and users[event.user_id] == 2:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Подтвердите публикацию новости',
                                       keyboard=create_keyb(['Опубликовать новость']))
                     incorrect_command = False
+                    continue
                 if text == 'сайт' and users[event.user_id] == 2:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='К сожалению, сайт Силаэдра пока не работает! Вы хотите отправить новость ' +
                                               'еще куда-нибудь?',
                                       keyboard=create_keyb1(['Группа ВК', 'Сайт', 'Почта', 'new_line', 'Нет, спасибо']))
+
                     incorrect_command = False
+                    continue
+                if users[event.user_id] == 2:
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Я Вас не понимаю, используйте кнопки ниже.',
+                                      keyboard=create_keyb(['Группа ВК', 'Почта']))
+                    incorrect_command = False
+                    continue
                 if text == 'help' or text == 'помощь' or text == '/start' or text == '/help' or text == 'начать':
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
