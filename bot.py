@@ -399,10 +399,8 @@ while True:
                                 grade += ' ' + text[i + 3].upper()
                             except:
                                 grade += text[i + 2].upper()
-                                print(1, file=stderr)
                             break
                         except:
-                            print(11111111111, file=stderr)
                             pass
                     if grade != '0':
                         vko.messages.send(user_id=event.user_id,
