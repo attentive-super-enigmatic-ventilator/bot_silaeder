@@ -14,3 +14,5 @@ if __name__ == "__main__":
             known_faces_encodings[i] = tmp[0]
 
     pickle.dump(known_faces_encodings, open("photos_prepared_for_face_recognition.dat", "wb"))
+
+additional_p = 1
