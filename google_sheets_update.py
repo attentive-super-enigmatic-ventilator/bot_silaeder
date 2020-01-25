@@ -16,7 +16,6 @@ while True:
         pickle.dump(sheet2, open("google_sheets_data.dat", "wb"))
         time.sleep(60)
     except Exception as er:
-        print(er)
         pass
 
 
