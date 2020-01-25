@@ -349,30 +349,42 @@ while True:
                                           keyboard=base)
                     incorrect_command = False
                 if users[event.user_id] == 10:
+                    x = True
                     if 'родителям' in text:
                         downloading_google_sheet.send_to_class(grade)
                         contacts += downloading_google_sheet.contacts
                         downloading_google_sheet.clear()
+                        users[event.user_id] = 3
                     elif 'ученикам' in text:
                         downloading_google_sheet.send_to_children(grade)
                         contacts += downloading_google_sheet.contacts
                         downloading_google_sheet.clear()
+                        users[event.user_id] = 3
                     elif 'всем' in text:
                         downloading_google_sheet.send_to_class(grade)
                         downloading_google_sheet.send_to_children(grade)
                         contacts += downloading_google_sheet.contacts
                         downloading_google_sheet.clear()
-                    users[event.user_id] = 3
-                    vko.messages.send(user_id=event.user_id,
-                                      random_id=random.randint(1, 10 ** 9),
-                                      message='Вы хотите отправить новость еще кому-нибудь? Если хотите, то напишите кому еще' +
-                                              ' надо отправить новость, а если хотите отправить новость ранее выбранным' +
-                                              ' контактам, то нажмите на кнопку "Отправить ранее выбранным контактам".' +
-                                              '\n' + 'Для отмены отправки нажмите на кнопку "Отменить отправку"',
-                                      keyboard=create_keyb(
-                                          ['5 С', '6 С', '7 С', '8 С', 'new_line', '8 Т', '8 Л', '10 С', 'new_line', 'Учителям',
-                                           'Отправить ранее выбранным контактам']))
-                    continue
+                        users[event.user_id] = 3
+                    else:
+                        x = False
+                        vko.messages.send(user_id=event.user_id,
+                                          random_id=random.randint(1, 10 ** 9),
+                                          message='Я Вас не понимаю, используйте кнопки ниже!',
+                                          keyboard=create_keyb(['Родителям(' + grade + ')', 'Ученикам(' + grade + ')',
+                                                                'Всем(' + grade + ')']))
+                        incorrect_command = False
+                    if x:
+                        vko.messages.send(user_id=event.user_id,
+                                          random_id=random.randint(1, 10 ** 9),
+                                          message='Вы хотите отправить новость еще кому-нибудь? Если хотите, то напишите кому еще' +
+                                                  ' надо отправить новость, а если хотите отправить новость ранее выбранным' +
+                                                  ' контактам, то нажмите на кнопку "Отправить ранее выбранным контактам".' +
+                                                  '\n' + 'Для отмены отправки нажмите на кнопку "Отменить отправку"',
+                                          keyboard=create_keyb(
+                                              ['5 С', '6 С', '7 С', '8 С', 'new_line', '8 Т', '8 Л', '10 С', 'new_line', 'Учителям',
+                                               'Отправить ранее выбранным контактам']))
+                        continue
                 if users[event.user_id] == 3:
                     cont = False
                     to_all = False
@@ -409,9 +421,13 @@ while True:
                         contacts += downloading_google_sheet.contacts
                         downloading_google_sheet.clear()
                     else:
-                        downloading_google_sheet.send_to_some(event.text)
-                        contacts += downloading_google_sheet.contacts
-                        downloading_google_sheet.clear()
+                        cont = True
+                        vko.messages.send(user_id=event.user_id,
+                                          random_id=random.randint(1, 10 ** 9),
+                                          message='Я Вас не понимаю, используйте кнопки ниже!',
+                                          keyboard=create_keyb(
+                                              ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
+                                               'Учителям', 'Абсолютно всем']))
                     if to_all:
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
@@ -441,7 +457,7 @@ while True:
                     users[event.user_id] = 3
                     incorrect_command = False
                     one_more_flag = False
-                if text == 'опубликовать новость' and users[event.user_id] == 2:
+                if text == 'опубликовать новость' and users[event.user_id] == 1001:
                     photos = glob.glob("photos/*.jpg")
                     if len(photos) != 0:
                         photo_list = upload.photo_wall(photos)
@@ -479,19 +495,38 @@ while True:
                             except Exception as e:
                                 print(e)
                     incorrect_command = False
+                    continue
                 if text == 'группа вк' and users[event.user_id] == 2:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Подтвердите публикацию новости',
                                       keyboard=create_keyb(['Опубликовать новость']))
+                    users[event.user_id] = 1001
                     incorrect_command = False
+                    continue
                 if text == 'сайт' and users[event.user_id] == 2:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='К сожалению, сайт Силаэдра пока не работает! Вы хотите отправить новость ' +
                                               'еще куда-нибудь?',
                                       keyboard=create_keyb1(['Группа ВК', 'Сайт', 'Почта', 'new_line', 'Нет, спасибо']))
+
                     incorrect_command = False
+                    continue
+                if users[event.user_id] == 2:
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Я Вас не понимаю, используйте кнопки ниже.',
+                                      keyboard=create_keyb(['Группа ВК', 'Почта']))
+                    incorrect_command = False
+                    continue
+                if users[event.user_id] == 1001:
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Я Вас не понимаю, используйте кнопки ниже.',
+                                      keyboard=create_keyb(['Опубликовать новость']))
+                    incorrect_command = False
+                    continue
                 if text == 'help' or text == 'помощь' or text == '/start' or text == '/help' or text == 'начать':
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
@@ -737,4 +772,5 @@ while True:
 
     except Exception as er:
         print(er)
+        users[event.user_id] = 0
         pass
