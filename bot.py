@@ -545,16 +545,14 @@ while True:
                     users[event.user_id] = 73
                     continue
                 if users[event.user_id] == 73:
-                    users_report_filename[event.user_id] = sha1(str(rd()).encode('utf-8')).hexdigest() + '.docx'
-
-                    Document().save(users_report_filename[event.user_id])
-                    Document(users_report_filename[event.user_id]).add_paragraph('Директору').paragraph_format.left_indent = Inches(4.85)
-                    Document(users_report_filename[event.user_id]).add_paragraph('ГБОУ “Школа им. Маршала В.И.Чуйкова').paragraph_format.left_indent = Inches(
+                    users_report_filename[event.user_id] = Document()
+                    report_file_name = sha1(str(rd()).encode('utf-8')).hexdigest() + '.docx'
+                    users_report_filename[event.user_id].add_paragraph('Директору').paragraph_format.left_indent = Inches(4.85)
+                    users_report_filename[event.user_id].add_paragraph('ГБОУ “Школа им. Маршала В.И.Чуйкова').paragraph_format.left_indent = Inches(
                         2.89)
-                    Document(users_report_filename[event.user_id]).add_paragraph("А.А.Инглези от О.А.Старуновой").paragraph_format.left_indent = Inches(3.47)
-
+                    users_report_filename[event.user_id].add_paragraph("А.А.Инглези от О.А.Старуновой").paragraph_format.left_indent = Inches(3.47)
                     event_description = event.text
-                    Document(users_report_filename[event.user_id]).add_paragraph(event_description).paragraph_format.left_indent = Inches(0.5)
+                    users_report_filename[event.user_id].add_paragraph(event_description).paragraph_format.left_indent = Inches(0.5)
                     users[event.user_id] = 74
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
@@ -563,7 +561,7 @@ while True:
 
                 if users[event.user_id] == 74:
                     event_date = event.text
-                    Document(users_report_filename[event.user_id]).add_paragraph('1)Дата мероприятия: ' + event_date)
+                    users_report_filename[event.user_id].add_paragraph('1)Дата мероприятия: ' + event_date)
                     users[event.user_id] = 75
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
@@ -572,7 +570,7 @@ while True:
 
                 if users[event.user_id] == 75:
                     event_place = event.text
-                    Document(users_report_filename[event.user_id]).add_paragraph('2)Место проведения: ' + event_place)
+                    users_report_filename[event.user_id].add_paragraph('2)Место проведения: ' + event_place)
                     users[event.user_id] = 76
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
@@ -580,9 +578,9 @@ while True:
                                       keyboard=create_keyb1(
                                           ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С']))
 
-                    Document(users_report_filename[event.user_id]).add_paragraph('3)Участники: ' + '\n')
+                    users_report_filename[event.user_id].add_paragraph('3)Участники: ' + '\n')
                     n = 1
-                    table = Document(users_report_filename[event.user_id]).add_table(rows=n, cols=5)
+                    table = users_report_filename[event.user_id].add_table(rows=n, cols=5)
                     hdr_cells = table.rows[0].cells
                     hdr_cells[0].text = 'Класс'
                     hdr_cells[1].text = 'Имя'
@@ -635,9 +633,9 @@ while True:
                 if users[event.user_id] == 77:
                     try:
                         numb = [int(i) for i in event.text.split()]
-                        Document(users_report_filename[event.user_id]).add_paragraph('4)Учителя:')
+                        users_report_filename[event.user_id].add_paragraph('4)Учителя:')
                         k = 1
-                        table = Document(users_report_filename[event.user_id]).add_table(rows=k, cols=5)
+                        table = users_report_filename[event.user_id].add_table(rows=k, cols=5)
                         hdr_cells = table.rows[0].cells
                         hdr_cells[0].text = 'Номер'
                         hdr_cells[1].text = 'Имя'
@@ -663,14 +661,13 @@ while True:
                     continue
                 if users[event.user_id] == 78:
                     event_responsible = event.text
-                    Document(users_report_filename[event.user_id]).add_paragraph('\n5)Ответственный: ' + event_responsible)
-                    report_file_name = sha1(str(rd()).encode('utf-8')).hexdigest() + '.docx'
-                    Document(users_report_filename[event.user_id]).save(    )
+                    users_report_filename[event.user_id].add_paragraph('\n5)Ответственный: ' + event_responsible)
+                    users_report_filename[event.user_id].save(report_file_name)
                     upload_url = vko.docs.getMessagesUploadServer(type='doc', peer_id='489061359')['upload_url']
                     response = requests.post(upload_url, files={'file': open(report_file_name, 'rb')})
                     result = json.loads(response.text)
                     file = result['file']
-                    json1 = vko.docs.save(file=file, title=sha1(str(rd()).encode('utf-8')).hexdigest(), tags=[])
+                    json1 = vko.docs.save(file=file, title=report_file_name, tags=[])
 
                     owner_id1 = json1['doc']['owner_id']
                     doc_id = json1['doc']['id']
