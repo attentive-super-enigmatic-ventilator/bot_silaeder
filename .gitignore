@@ -104,8 +104,14 @@ venv.bak/
 .mypy_cache/
 
 # Local
+<<<<<<< HEAD
+*.dat
+*.json
+*.jpg
+=======
 .idea/
 base_of_photos/
 photos/
 *.dat
 *.json
+>>>>>>> 52e285e4f35d69ef39ce8c0d4b2c974f6921d42f
