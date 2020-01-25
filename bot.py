@@ -87,7 +87,7 @@ def sendmail(text1, files):
                 encoders.encode_base64(file)
             file.add_header('Content-Disposition', 'attachment', filename=filename)
             msg.attach(file)
-    # mail.send_message(msg, to_addrs=contacts)
+    mail.send_message(msg, to_addrs=contacts)
     mail.quit()
 
 
@@ -141,7 +141,7 @@ for the_file in os.listdir(folder):
         if os.path.isfile(file_path):
             os.unlink(file_path)
     except Exception as e:
-        print(e)
+        print(e, file=stderr)
 
 stop = VkKeyboard(one_time=True)
 stop.add_button('Отменить отправку', color=VkKeyboardColor.NEGATIVE)
@@ -183,7 +183,7 @@ while True:
                             if os.path.isfile(file_path):
                                 os.unlink(file_path)
                         except Exception as e:
-                            print(e)
+                            print(e, file=stderr)
                     continue
 
                 if text == 'нет, спасибо':
@@ -206,7 +206,7 @@ while True:
                             if os.path.isfile(file_path):
                                 os.unlink(file_path)
                         except Exception as e:
-                            print(e)
+                            print(e, file=stderr)
                 if text == 'отправить ранее выбранным контактам' or text == 'отправить новость':
                     if not f_group:
                         vko.messages.send(user_id=event.user_id,
@@ -239,7 +239,7 @@ while True:
                                 if os.path.isfile(file_path):
                                     os.unlink(file_path)
                             except Exception as e:
-                                print(e)
+                                print(e, file=stderr)
                     incorrect_command = False
                 if users[event.user_id] == 1 and text == 'нет':
                     users[event.user_id] = 2
@@ -266,7 +266,7 @@ while True:
                             if os.path.isfile(file_path):
                                 os.unlink(file_path)
                         except Exception as e:
-                            print(e)
+                            print(e, file=stderr)
                     continue
                 if users[event.user_id] == 1:
                     result = {}
@@ -333,7 +333,7 @@ while True:
                     flag = True
                     users[event.user_id] = 1
                     incorrect_command = False
-                if 'привет' in text:
+                if 'привет' in text and users[event.user_id] == 0:
                     if vko.users.get(user_ids=event.user_id, fields=['sex'])[0]['sex'] == 2:
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
@@ -492,7 +492,7 @@ while True:
                                 if os.path.isfile(file_path):
                                     os.unlink(file_path)
                             except Exception as e:
-                                print(e)
+                                print(e, file=stderr)
                     incorrect_command = False
                     continue
                 if text == 'группа вк' and users[event.user_id] == 2:
@@ -691,7 +691,7 @@ while True:
                                               '- напишите мне "Отправить" для автоматической рассылки новостей, ' +
                                               'далее следуйте моим указаниям' + '\n' +
                                               '- напишите мне "Привет", и я поздороваюсь с Вами', keyboard=base)
-                    users
+                    users[event.user_id] = 0
             elif event.type == vk_api.longpoll.VkEventType.MESSAGE_NEW and event.to_me and str(event.user_id) not in admins:
                 if str(event.user_id) not in users:
                     users[str(event.user_id)] = 0
@@ -767,6 +767,6 @@ while True:
                                       keyboard=create_keyb2(["5С", "6С", "7С", "new_line", "8С", "8Л", "8Т", "10С"]))
 
     except Exception as er:
-        print(er)
+        print(er, file=stderr)
         users[event.user_id] = 0
         pass
