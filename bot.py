@@ -314,9 +314,8 @@ while True:
                                           message=surname + ' ' + name + ' добавлен в базу данных!',
                                           keyboard=base)
 
-                        print(glob.glob("photos/*.jpg"))
                         contacts = [email]
-                        sendmail('Вы были добавлены в базу фотографий бота!')
+                        sendmail('Вы были добавлены в базу фотографий бота!', [])
                         users[event.user_id] = 0
                         contacts = []
                         for file in os.scandir():
