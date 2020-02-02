@@ -224,9 +224,9 @@ while True:
                                         except:
                                             pass
                                         try:
-                                            result[name[0] + ' ' + name[1] + ' ' + name[-1]] += 1
+                                            result[name[0] + ' ' + name[1] + ' ' + name[2]] += 1
                                         except:
-                                            result[name[0] + ' ' + name[1] + ' ' + name[-1]] = 1
+                                            result[name[0] + ' ' + name[1] + ' ' + name[2]] = 1
                                         face = True
                                 if face:
                                     maximum = 0
