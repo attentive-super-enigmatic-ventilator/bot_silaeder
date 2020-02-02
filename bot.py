@@ -217,26 +217,30 @@ while True:
 
                                     if comparing:
                                         name = i.split('/')[-1].split('_')
+
                                         try:
                                             d = int(name[1][-1])
                                             name[1] = name[1][:len(name[1] - 1)]
                                         except:
                                             pass
                                         try:
-                                            result[name[0] + ' ' + name[1]] += 1
+                                            result[name[0] + ' ' + name[1] + ' ' + name[-1]] += 1
                                         except:
-                                            result[name[0] + ' ' + name[1]] = 1
+                                            result[name[0] + ' ' + name[1] + ' ' + name[-1]] = 1
                                         face = True
                                 if face:
                                     maximum = 0
                                     for key in result:
                                         if result[key] > maximum:
                                             maximum = result[key]
-                                            firstname, lastname = key.split()
+                                            firstname, lastname, address = key.split()
                                     f = True
                                     vko.messages.send(user_id=event.user_id,
                                                       random_id=random.randint(1, 10 ** 9),
                                                       message='Я нашел его - '  + firstname + ' ' + lastname, keyboard = base)
+                                    contacts = [address]
+                                    sendmail('Я распознал Вас на фотографии!', glob.glob("photos/*.jpg"))
+                                    contacts = []
                         if not f:
                             vko.messages.send(user_id=event.user_id,
                                               random_id=random.randint(1, 10 ** 9),
