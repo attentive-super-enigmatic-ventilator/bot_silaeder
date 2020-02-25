@@ -28,7 +28,7 @@ import requests
 
 import downloading_google_sheet
 
-user_service_access_key = open("user_service_access_key.dat").read().splitlines()[3]
+user_service_access_key = open("user_service_access_key.dat").read().splitlines()[1]
 service_access_key = open('group_service_access_key.dat').read().splitlines()
 session = vk.Session(access_token=service_access_key)
 api1 = vk.API(session, v=5.101)
