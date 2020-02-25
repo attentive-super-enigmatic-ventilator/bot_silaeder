@@ -33,7 +33,7 @@ service_access_key = open('group_service_access_key.dat').read().splitlines()
 session = vk.Session(access_token=service_access_key)
 api1 = vk.API(session, v=5.101)
 owner_id = open('owner.dat').read().splitlines()
-admins = {str(i) for i in open('admins.dat').read().splitlines()}
+admins = [str(i) for i in open('admins.dat').read().splitlines()]
 loginpassword = open('login_password.dat').read().splitlines()
 mail1 = open('mail.dat').read().splitlines()
 tokens = open('group_token.dat').read().splitlines()
@@ -46,6 +46,7 @@ contacts = []
 vk_sessio = vk_api.VkApi(loginpassword[0], loginpassword[1], app_id=int(app_id[0]), scope='wall, photos')
 vk_sessio.auth()
 upload = vk_api.VkUpload(vk_sessio)
+admin_mails = [str(i) for i in open('admin_mail.dat').read().splitlines()]
 
 
 known_faces_encodings = pickle.load(open("photos_prepared_for_face_recognition.dat", "rb"))
@@ -165,6 +166,8 @@ f_mail = False
 f_group = False
 news = ''
 users = {}
+check_flag = False
+check = ''
 print("Successfully started", file=stderr)
 while True:
     try:
@@ -358,6 +361,8 @@ while True:
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Отправка отменена! Обращайтесь, когда появятся новости!',
                                       keyboard=base)
+                    check = ''
+                    check_flag = False
                     news = ''
                     incorrect_command = False
                     f_group = False
@@ -399,6 +404,27 @@ while True:
                         except Exception as e:
                             print(e, file=stderr)
                 if text == 'отправить ранее выбранным контактам' or text == 'отправить новость':
+                    check_flag = True
+                    check = ''
+                    for sy in range(5):
+                        check += random.choice(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'])
+                    mail = smtplib.SMTP('smtp.mail.ru', 587)
+                    msg = MIMEMultipart()
+                    msg['From'] = mail1[0]
+                    msg['Subject'] = 'Код подтверждения'
+                    msg.attach(MIMEText(check, 'plain'))
+                    mail.starttls(context=ssl.create_default_context())
+                    mail.login(str(msg['From']), str(mail1[1]))
+                    mail.send_message(msg, to_addrs=admin_mails[admins.index(str(event.user_id))])
+                    mail.quit()
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Я отправил Вам на почту ключ подтверждения. Отправьте его мне, чтобы успешно завершить рассылку',
+                                      keyboard=create_keyb([]))
+                    incorrect_command = False
+                    continue
+                if check_flag and text == check:
+                    check_flag = False
                     if not f_group:
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
@@ -409,6 +435,7 @@ while True:
                         users[event.user_id] = 2
                         if len(contacts) != 0:
                             sendmail(news, glob.glob("photos/*"))
+                        check_flag = False
                         continue
                     else:
                         f_group = False
@@ -433,6 +460,7 @@ while True:
                             except Exception as e:
                                 print(e, file=stderr)
                     incorrect_command = False
+                    check_flag = False
                     continue
                 if users[event.user_id] == 1 and text == 'нет':
                     users[event.user_id] = 2
