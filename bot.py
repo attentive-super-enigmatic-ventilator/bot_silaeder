@@ -420,7 +420,7 @@ while True:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Я отправил Вам на почту ключ подтверждения. Отправьте его мне, чтобы успешно завершить рассылку',
-                                      keyboard=create_keyb([]))
+                                      keyboard=stop)
                     incorrect_command = False
                     continue
                 if check_flag and text == check:
