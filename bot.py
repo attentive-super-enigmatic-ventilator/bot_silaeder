@@ -28,7 +28,7 @@ import requests
 
 import downloading_google_sheet
 
-user_service_access_key = open("user_service_access_key.dat").read().splitlines()[2]
+user_service_access_key = open("user_service_access_key.dat").read().splitlines()[3]
 service_access_key = open('group_service_access_key.dat').read().splitlines()
 session = vk.Session(access_token=service_access_key)
 api1 = vk.API(session, v=5.101)
@@ -47,7 +47,10 @@ vk_sessio = vk_api.VkApi(loginpassword[0], loginpassword[1], app_id=int(app_id[0
 vk_sessio.auth()
 upload = vk_api.VkUpload(vk_sessio)
 
+
 known_faces_encodings = pickle.load(open("photos_prepared_for_face_recognition.dat", "rb"))
+"""known_faces_encodings_for_balt = {}
+pickle.dump(known_faces_encodings_for_balt, open("photos_prepared_for_face_recognition_for_balt.dat", "wb"))"""
 known_faces_encodings_for_balt = pickle.load(open("photos_prepared_for_face_recognition_for_balt.dat", "rb"))
 test_image_encodings = []
 quantity_faces = []
@@ -56,9 +59,7 @@ users_report_filename = {}
 
 
 def sendmail(text1, files):
-    print(1)
     mail = smtplib.SMTP('smtp.mail.ru', 587)
-    print(1)
     msg = MIMEMultipart()
     msg['From'] = mail1[0]
     msg['Subject'] = 'Новости Силаэдра'
@@ -104,7 +105,6 @@ base.add_button('Отправить', color=VkKeyboardColor.POSITIVE)
 base.add_button('Служебная записка')
 base.add_button('Добавить нового человека', color=VkKeyboardColor.POSITIVE)
 base.add_line()
-base.add_button('Распознать балтёныша')
 base.add_button('help', color=VkKeyboardColor.POSITIVE)
 base = base.get_keyboard()
 
@@ -267,13 +267,7 @@ while True:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Что вас интересует?',
-                                      keyboard=create_keyb(['База фотографий Балт-конкурса', 'База фотографий Силаэдра']))
-                    continue
-                if text == 'база фотографий балт-конкурса':
-                    users[event.user_id] = 1234
-                    vko.messages.send(user_id=event.user_id,
-                                      random_id=random.randint(1, 10 ** 9),
-                                      message='Пришлите мне ваше фото с именем, фамилией и адресом электронной через пробел')
+                                      keyboard=create_keyb1(['База фотографий Силаэдра']))
                     continue
                 if text == 'база фотографий силаэдра':
                     users[event.user_id] = 1235
@@ -415,6 +409,7 @@ while True:
                         users[event.user_id] = 2
                         if len(contacts) != 0:
                             sendmail(news, glob.glob("photos/*"))
+                        continue
                     else:
                         f_group = False
                         f_mail = False
@@ -438,6 +433,7 @@ while True:
                             except Exception as e:
                                 print(e, file=stderr)
                     incorrect_command = False
+                    continue
                 if users[event.user_id] == 1 and text == 'нет':
                     users[event.user_id] = 2
                     one_more_flag = True
@@ -450,7 +446,7 @@ while True:
                     try:
                         sendmail(news, glob.glob("photos/*.jpg"))
                     except Exception as e:
-                        print('ОШИБКА: ' + str(e))
+                        print('ОШИБКА: ' + str(e), file=stderr)
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Новость отправлена! Обращайтесь, когда появятся еще новости!',
