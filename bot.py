@@ -462,6 +462,26 @@ while True:
                     incorrect_command = False
                     check_flag = False
                     continue
+                if check_flag and text != check:
+                    check_flag = True
+                    check = ''
+                    for sy in range(5):
+                        check += random.choice(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'])
+                    mail = smtplib.SMTP('smtp.mail.ru', 587)
+                    msg = MIMEMultipart()
+                    msg['From'] = mail1[0]
+                    msg['Subject'] = 'Код подтверждения'
+                    msg.attach(MIMEText(check, 'plain'))
+                    mail.starttls(context=ssl.create_default_context())
+                    mail.login(str(msg['From']), str(mail1[1]))
+                    mail.send_message(msg, to_addrs=admin_mails[admins.index(str(event.user_id))])
+                    mail.quit()
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Неправильный код подтверждения!!! Я отправил Вам на почту новый ключ подтверждения. Отправьте его мне, чтобы успешно завершить рассылку',
+                                      keyboard=stop)
+                    incorrect_command = False
+                    continue
                 if users[event.user_id] == 1 and text == 'нет':
                     users[event.user_id] = 2
                     one_more_flag = True
