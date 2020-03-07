@@ -209,7 +209,6 @@ while True:
                                 test_image_encodings.append(test_image_encoding)
                                 quantity_faces.append(test_image_locations)
                         f = False
-                        print(test_image_encodings)
                         if not quantity_faces == []:
                             for j in test_image_encodings:
                                 result = {}
@@ -515,7 +514,6 @@ while True:
                     news = event.text
                     flag = False
                     photos = api1.messages.getById(message_ids=event.message_id, group_id=183112747)
-                    print(photos)
                     for i in range(len(photos['items'][0]['attachments'])):
 
                         if photos['items'][0]['attachments'][i]['type'] == 'photo':
