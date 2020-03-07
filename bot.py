@@ -52,7 +52,6 @@ admin_mails = [str(i) for i in open('admin_mail.dat').read().splitlines()]
 known_faces_encodings = pickle.load(open("photos_prepared_for_face_recognition.dat", "rb"))
 """known_faces_encodings_for_balt = {}
 pickle.dump(known_faces_encodings_for_balt, open("photos_prepared_for_face_recognition_for_balt.dat", "wb"))"""
-known_faces_encodings_for_balt = pickle.load(open("photos_prepared_for_face_recognition_for_balt.dat", "rb"))
 test_image_encodings = []
 quantity_faces = []
 
