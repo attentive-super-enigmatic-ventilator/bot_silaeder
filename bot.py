@@ -66,7 +66,6 @@ def sendmail(text1, files):
     msg.attach(MIMEText(text1, 'plain'))
     for filepath in files:
         filename = os.path.basename(filepath)
-        print(filename)
         if os.path.isfile(filepath):
             ctype, encoding = mimetypes.guess_type(filepath)
             if ctype is None or encoding is not None:
