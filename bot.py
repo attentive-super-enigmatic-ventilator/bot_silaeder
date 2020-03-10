@@ -661,6 +661,7 @@ while True:
                             break
                         except:
                             pass
+                    number_of_contacts = len(contacts)
                     if grade != '0':
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
@@ -669,6 +670,7 @@ while True:
                                                                 'Всем(' + grade + ')']))
                         cont = True
                         users[event.user_id] = 10
+                        continue
                     elif 'абсолютно всем' in text:
                         downloading_google_sheet.send_to_all()
                         contacts += downloading_google_sheet.contacts
@@ -679,6 +681,10 @@ while True:
                         contacts += downloading_google_sheet.contacts
                         downloading_google_sheet.clear()
                     else:
+                        downloading_google_sheet.send_to_some(event.text)
+                        contacts += downloading_google_sheet.contacts
+                        downloading_google_sheet.clear()
+                    if len(contacts) == number_of_contacts:
                         cont = True
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
@@ -686,6 +692,7 @@ while True:
                                           keyboard=create_keyb(
                                               ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
                                                'Учителям', 'Абсолютно всем']))
+                        continue
                     if to_all:
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
@@ -715,6 +722,7 @@ while True:
                     users[event.user_id] = 3
                     incorrect_command = False
                     one_more_flag = False
+                    continue
                 if text == 'опубликовать новость' and users[event.user_id] == 1001:
                     photos = glob.glob("photos/*.jpg")
                     if len(photos) != 0:
