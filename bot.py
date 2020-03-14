@@ -147,7 +147,7 @@ def create_keyb2(buttons):
     keyboard = keyboard.get_keyboard()
     return keyboard
 
-folder = 'photos'
+folder = 'photos' + str(event.user_id)
 for the_file in os.listdir(folder):
     file_path = os.path.join(folder, the_file)
     try:
@@ -201,7 +201,7 @@ while True:
                         face = False
                         test_image_encodings = []
                         quantity_faces = []
-                        for i in glob.glob("photos/*.jpg"):
+                        for i in glob.glob("photos/" + str(event.user_id) + "/*.jpg"):
                             test_image = face_recognition.load_image_file(i)
                             test_image_locations = face_recognition.face_locations(test_image)
                             if not test_image_locations == []:
@@ -252,7 +252,7 @@ while True:
                         for file in os.scandir():
                             if file.name.endswith(".docx"):
                                 os.unlink(file.path)
-                        folder = 'photos'
+                        folder = 'photos' + str(event.user_id)
                         for the_file in os.listdir(folder):
                             file_path = os.path.join(folder, the_file)
                             try:
@@ -315,7 +315,7 @@ while True:
                         for file in os.scandir():
                             if file.name.endswith(".docx"):
                                 os.unlink(file.path)
-                        folder = 'photos'
+                        folder = 'photos' + str(event.user_id)
                         for the_file in os.listdir(folder):
                             file_path = os.path.join(folder, the_file)
                             try:
@@ -369,7 +369,7 @@ while True:
                     for file in os.scandir():
                         if file.name.endswith(".docx"):
                             os.unlink(file.path)
-                    folder = 'photos'
+                    folder = 'photos' + str(event.user_id)
                     for the_file in os.listdir(folder):
                         file_path = os.path.join(folder, the_file)
                         try:
@@ -388,11 +388,11 @@ while True:
                                       keyboard=base)
                     users[event.user_id] = 0
                     if len(contacts) != 0:
-                        sendmail(news, glob.glob("photos/*"))
+                        sendmail(news, glob.glob("photos/" + str(event.user_id) + "/*.jpg"))
                     contacts = []
                     news = ''
                     incorrect_command = False
-                    folder = 'photos'
+                    folder = 'photos' + str(event.user_id)
                     for the_file in os.listdir(folder):
                         file_path = os.path.join(folder, the_file)
                         try:
@@ -431,7 +431,7 @@ while True:
                         f_mail = True
                         users[event.user_id] = 2
                         if len(contacts) != 0:
-                            sendmail(news, glob.glob("photos/*"))
+                            sendmail(news, glob.glob("photos/" + str(event.user_id) + "/*.jpg"))
                         check_flag = False
                         continue
                     else:
@@ -444,11 +444,11 @@ while True:
                                           keyboard=base)
                         users[event.user_id] = 0
                         if len(contacts) != 0:
-                            sendmail(news, glob.glob("photos/*.jpg"))
+                            sendmail(news, glob.glob("photos/" + str(event.user_id) + "/*.jpg"))
                         contacts = []
                         news = ''
                         incorrect_command = False
-                        folder = 'photos'
+                        folder = 'photos' + str(event.user_id)
                         for the_file in os.listdir(folder):
                             file_path = os.path.join(folder, the_file)
                             try:
@@ -489,7 +489,7 @@ while True:
                     contacts = downloading_google_sheet.contacts
                     downloading_google_sheet.clear()
                     try:
-                        sendmail(news, glob.glob("photos/*.jpg"))
+                        sendmail(news, glob.glob("photos/" + str(event.user_id) + "/*.jpg"))
                     except Exception as e:
                         print('ОШИБКА: ' + str(e), file=stderr)
                     vko.messages.send(user_id=event.user_id,
@@ -500,7 +500,7 @@ while True:
                     contacts = []
                     news = ''
                     incorrect_command = False
-                    folder = 'photos'
+                    folder = 'photos' + str(event.user_id)
                     for the_file in os.listdir(folder):
                         file_path = os.path.join(folder, the_file)
                         try:
@@ -514,24 +514,28 @@ while True:
                     news = event.text
                     flag = False
                     photos = api1.messages.getById(message_ids=event.message_id, group_id=183112747)
+                    try:
+                        os.mkdir("photos/" + str(event.user_id))
+                    except:
+                        continue
                     for i in range(len(photos['items'][0]['attachments'])):
 
                         if photos['items'][0]['attachments'][i]['type'] == 'photo':
                             length = len(photos['items'][0]['attachments'][i]['photo']['sizes']) - 1
                             urllib.request.urlretrieve(
                                 photos['items'][0]['attachments'][i]['photo']['sizes'][length]['url'],
-                                'photos/' + str(i) + '.jpg')
+                                'photos/' + str(event.user_id) + "/" + str(i) + '.jpg')
 
                         if photos['items'][0]['attachments'][i]['type']== 'doc':
                             urllib.request.urlretrieve(
                                 photos['items'][0]['attachments'][i]['doc']['url'],
-                                'photos/' + str(i) + '.' + photos['items'][0]['attachments'][i]['doc']['ext'])
+                                'photos/' + str(event.user_id) + "/" + str(i) + '.' + photos['items'][0]['attachments'][i]['doc']['ext'])
                     known_faces_encodings = pickle.load(
                         open("photos_prepared_for_face_recognition.dat", "rb"))
                     face = False
                     test_image_encodings = []
                     quantity_faces = []
-                    for i in glob.glob("photos/*.jpg"):
+                    for i in glob.glob("photos/" + str(event.user_id) + "/*.jpg"):
                         test_image = face_recognition.load_image_file(i)
                         test_image_locations = face_recognition.face_locations(test_image)
                         if not test_image_locations == []:
@@ -720,7 +724,7 @@ while True:
                     one_more_flag = False
                     continue
                 if text == 'опубликовать новость' and users[event.user_id] == 1001:
-                    photos = glob.glob("photos/*.jpg")
+                    photos = glob.glob("photos/" + str(event.user_id) + "/*.jpg")
                     if len(photos) != 0:
                         photo_list = upload.photo_wall(photos)
                         attachment = ','.join('photo{owner_id}_{id}'.format(**item) for item in photo_list)
@@ -744,11 +748,11 @@ while True:
                                           keyboard=base)
                         users[event.user_id] = 0
                         if len(contacts) != 0:
-                            sendmail(news, glob.glob("photos/*.jpg"))
+                            sendmail(news, glob.glob("photos/" + str(event.user_id) + "/*.jpg"))
                         contacts = []
                         news = ''
                         incorrect_command = False
-                        folder = 'photos'
+                        folder = 'photos' + str(event.user_id)
                         for the_file in os.listdir(folder):
                             file_path = os.path.join(folder, the_file)
                             try:
@@ -812,7 +816,7 @@ while True:
                     for file in os.scandir():
                         if file.name.endswith(".docx"):
                             os.unlink(file.path)
-                    folder = 'photos'
+                    folder = 'photos/' + str(event.user_id)
                     for the_file in os.listdir(folder):
                         file_path = os.path.join(folder, the_file)
                         try:
