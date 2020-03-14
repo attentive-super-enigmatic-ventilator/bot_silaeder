@@ -52,7 +52,6 @@ admin_mails = [str(i) for i in open('admin_mail.dat').read().splitlines()]
 known_faces_encodings = pickle.load(open("photos_prepared_for_face_recognition.dat", "rb"))
 """known_faces_encodings_for_balt = {}
 pickle.dump(known_faces_encodings_for_balt, open("photos_prepared_for_face_recognition_for_balt.dat", "wb"))"""
-known_faces_encodings_for_balt = pickle.load(open("photos_prepared_for_face_recognition_for_balt.dat", "rb"))
 test_image_encodings = []
 quantity_faces = []
 
@@ -67,7 +66,6 @@ def sendmail(text1, files):
     msg.attach(MIMEText(text1, 'plain'))
     for filepath in files:
         filename = os.path.basename(filepath)
-        print(filename)
         if os.path.isfile(filepath):
             ctype, encoding = mimetypes.guess_type(filepath)
             if ctype is None or encoding is not None:
@@ -211,7 +209,6 @@ while True:
                                 test_image_encodings.append(test_image_encoding)
                                 quantity_faces.append(test_image_locations)
                         f = False
-                        print(test_image_encodings)
                         if not quantity_faces == []:
                             for j in test_image_encodings:
                                 result = {}
@@ -462,6 +459,26 @@ while True:
                     incorrect_command = False
                     check_flag = False
                     continue
+                if check_flag and text != check:
+                    check_flag = True
+                    check = ''
+                    for sy in range(5):
+                        check += random.choice(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'])
+                    mail = smtplib.SMTP('smtp.mail.ru', 587)
+                    msg = MIMEMultipart()
+                    msg['From'] = mail1[0]
+                    msg['Subject'] = 'Код подтверждения'
+                    msg.attach(MIMEText(check, 'plain'))
+                    mail.starttls(context=ssl.create_default_context())
+                    mail.login(str(msg['From']), str(mail1[1]))
+                    mail.send_message(msg, to_addrs=admin_mails[admins.index(str(event.user_id))])
+                    mail.quit()
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Неправильный код подтверждения!!! Я отправил Вам на почту новый ключ подтверждения. Отправьте его мне, чтобы успешно завершить рассылку',
+                                      keyboard=stop)
+                    incorrect_command = False
+                    continue
                 if users[event.user_id] == 1 and text == 'нет':
                     users[event.user_id] = 2
                     one_more_flag = True
@@ -497,7 +514,6 @@ while True:
                     news = event.text
                     flag = False
                     photos = api1.messages.getById(message_ids=event.message_id, group_id=183112747)
-                    print(photos)
                     for i in range(len(photos['items'][0]['attachments'])):
 
                         if photos['items'][0]['attachments'][i]['type'] == 'photo':
@@ -641,6 +657,7 @@ while True:
                             break
                         except:
                             pass
+                    number_of_contacts = len(contacts)
                     if grade != '0':
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
@@ -649,6 +666,7 @@ while True:
                                                                 'Всем(' + grade + ')']))
                         cont = True
                         users[event.user_id] = 10
+                        continue
                     elif 'абсолютно всем' in text:
                         downloading_google_sheet.send_to_all()
                         contacts += downloading_google_sheet.contacts
@@ -659,6 +677,10 @@ while True:
                         contacts += downloading_google_sheet.contacts
                         downloading_google_sheet.clear()
                     else:
+                        downloading_google_sheet.send_to_some(event.text)
+                        contacts += downloading_google_sheet.contacts
+                        downloading_google_sheet.clear()
+                    if len(contacts) == number_of_contacts:
                         cont = True
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
@@ -666,6 +688,7 @@ while True:
                                           keyboard=create_keyb(
                                               ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
                                                'Учителям', 'Абсолютно всем']))
+                        continue
                     if to_all:
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
@@ -695,6 +718,7 @@ while True:
                     users[event.user_id] = 3
                     incorrect_command = False
                     one_more_flag = False
+                    continue
                 if text == 'опубликовать новость' and users[event.user_id] == 1001:
                     photos = glob.glob("photos/*.jpg")
                     if len(photos) != 0:
@@ -771,7 +795,7 @@ while True:
                                       message='Мои функции:' + '\n' +
                                               '- напишите мне "Отправить" для автоматической рассылки новостей, далее ' +
                                               'следуйте моим указаниям' + '\n' +
-                                              '- напишите мне "Привет", и я поздороваюсь с Вами',
+                                              '- напишите мне "Служебная записка", чтобы приступить к составлению служебной записки',
                                       keyboard=base)
                     incorrect_command = False
                 if text == 'вернуться к другим функциям':
