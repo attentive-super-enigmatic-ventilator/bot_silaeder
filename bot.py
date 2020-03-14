@@ -50,8 +50,6 @@ admin_mails = [str(i) for i in open('admin_mail.dat').read().splitlines()]
 
 
 known_faces_encodings = pickle.load(open("photos_prepared_for_face_recognition.dat", "rb"))
-"""known_faces_encodings_for_balt = {}
-pickle.dump(known_faces_encodings_for_balt, open("photos_prepared_for_face_recognition_for_balt.dat", "wb"))"""
 test_image_encodings = []
 quantity_faces = []
 
@@ -147,7 +145,7 @@ def create_keyb2(buttons):
     keyboard = keyboard.get_keyboard()
     return keyboard
 
-folder = 'photos' + str(event.user_id)
+folder = 'photos'
 for the_file in os.listdir(folder):
     file_path = os.path.join(folder, the_file)
     try:
@@ -177,182 +175,7 @@ while True:
                 incorrect_command = True
                 inf = (vko.users.get(user_ids=event.user_id)[0])
                 text = event.text.lower()
-                if text == 'распознать балтёныша':
-                    vko.messages.send(user_id=event.user_id,
-                                      random_id=random.randint(1, 10 ** 9),
-                                      message='Пришлите мне фото человека, и я напишу, кто это, если он есть в моей базе данных.',
-                                      keyboard=back)
-                    users[event.user_id] = -100
-                    continue
-                if users[event.user_id] == -100:
-                    photos = api1.messages.getById(message_ids=event.message_id, group_id=183112747)
-                    if photos['items'][0]['attachments'] == []:
-                        vko.messages.send(user_id=event.user_id,
-                                          random_id=random.randint(1, 10 ** 9),
-                                          message="Вы не прислали фото!")
-                    else:
-                        for i in range(len(photos['items'][0]['attachments'])):
-                            length = len(photos['items'][0]['attachments'][i]['photo']['sizes']) - 1
-                            urllib.request.urlretrieve(
-                                photos['items'][0]['attachments'][i]['photo']['sizes'][length]['url'],
-                                'photos/' + str(event.user_id) + "_" + str(i) + '.jpg')
-                        known_faces_encodings_for_balt = pickle.load(
-                            open("photos_prepared_for_face_recognition_for_balt.dat", "rb"))
-                        face = False
-                        test_image_encodings = []
-                        quantity_faces = []
-                        for i in glob.glob("photos/" + str(event.user_id) + "/*.jpg"):
-                            test_image = face_recognition.load_image_file(i)
-                            test_image_locations = face_recognition.face_locations(test_image)
-                            if not test_image_locations == []:
-                                test_image_encoding = face_recognition.face_encodings(test_image, test_image_locations)[0]
-                                test_image_encodings.append(test_image_encoding)
-                                quantity_faces.append(test_image_locations)
-                        f = False
-                        if not quantity_faces == []:
-                            for j in test_image_encodings:
-                                result = {}
-                                for i in known_faces_encodings_for_balt.keys():
-                                    comparing = face_recognition.compare_faces([known_faces_encodings_for_balt[i]], j)[0]
 
-                                    if comparing:
-                                        name = i.split('/')[-1].split('_')
-
-                                        try:
-                                            d = int(name[1][-1])
-                                            name[1] = name[1][:len(name[1] - 1)]
-                                        except:
-                                            pass
-                                        try:
-                                            result[name[0] + ' ' + name[1] + ' ' + name[2]] += 1
-                                        except:
-                                            result[name[0] + ' ' + name[1] + ' ' + name[2]] = 1
-                                        face = True
-                                if face:
-                                    maximum = 0
-                                    for key in result:
-                                        if result[key] > maximum:
-                                            maximum = result[key]
-                                            firstname, lastname, address = key.split()
-                                    f = True
-                                    vko.messages.send(user_id=event.user_id,
-                                                      random_id=random.randint(1, 10 ** 9),
-                                                      message='Я нашел его - '  + firstname + ' ' + lastname, keyboard = base)
-                                    contacts = [address]
-                                    sendmail('Я распознал Вас на фотографии!', glob.glob("photos/*.jpg"))
-                                    contacts = []
-                        if not f:
-                            vko.messages.send(user_id=event.user_id,
-                                              random_id=random.randint(1, 10 ** 9),
-                                              message='Я не нашел в своей базе данных никого, похожего на этого человека.', keyboard=base)
-
-                        incorrect_command = False
-                        users[event.user_id] = 0
-                        contacts = []
-                        for file in os.scandir():
-                            if file.name.endswith(".docx"):
-                                os.unlink(file.path)
-                        folder = 'photos' + str(event.user_id)
-                        for the_file in os.listdir(folder):
-                            file_path = os.path.join(folder, the_file)
-                            try:
-                                if os.path.isfile(file_path):
-                                    os.unlink(file_path)
-                            except Exception as e:
-                                print(e, file=stderr)
-                        continue
-
-
-                if text == 'добавить нового человека':
-                    vko.messages.send(user_id=event.user_id,
-                                      random_id=random.randint(1, 10 ** 9),
-                                      message='Что вас интересует?',
-                                      keyboard=create_keyb1(['База фотографий Силаэдра']))
-                    continue
-                if text == 'база фотографий силаэдра':
-                    users[event.user_id] = 1235
-                    vko.messages.send(user_id=event.user_id,
-                                      random_id=random.randint(1, 10 ** 9),
-                                      message='Пришлите мне ваше фото с именем, фамилией и адресом электронной через пробел')
-                    continue
-                if users[event.user_id] == 1234:
-                    try:
-                        name, surname, email = event.text.split()
-                    except:
-                        vko.messages.send(user_id=event.user_id,
-                                          random_id=random.randint(1, 10 ** 9),
-                                          message="Неправильный формат ввода! Напишите мне имя и фамилию через пробел и прикрепите свое фото.")
-                        continue
-                    photos = api1.messages.getById(message_ids=event.message_id, group_id=183112747)
-
-                    if photos['items'][0]['attachments'] == []:
-                        vko.messages.send(user_id=event.user_id,
-                                          random_id=random.randint(1, 10 ** 9),
-                                          message="Вы не прислали фото!")
-                    else:
-                        for i in range(len(photos['items'][0]['attachments'])):
-                            length = len(photos['items'][0]['attachments'][i]['photo']['sizes']) - 1
-                            urllib.request.urlretrieve(
-                                photos['items'][0]['attachments'][i]['photo']['sizes'][length]['url'],
-                                'base_of_photos_for_balt/' + name + "_" + surname + "_" + email + "_" + str(i) + '.jpg')
-                        photo = face_recognition.load_image_file('base_of_photos_for_balt/' + name + "_" + surname + "_" + email + "_" + str(i) + '.jpg')
-
-                        tmp = face_recognition.face_encodings(photo)
-                        if tmp != []:
-                            known_faces_encodings_for_balt['base_of_photos_for balt/' + name + "_" + surname + "_" + email + "_" + str(i) + '.jpg'] = tmp[0]
-
-                        pickle.dump(known_faces_encodings_for_balt, open("photos_prepared_for_face_recognition_for_balt.dat", "wb"))
-                    
-                        vko.messages.send(user_id=event.user_id,
-                                          random_id=random.randint(1, 10 ** 9),
-                                          message=surname + ' ' + name + ' добавлен в базу данных!',
-                                          keyboard=base)
-
-                        contacts = [email]
-                        sendmail('Вы были добавлены в базу фотографий бота!', [])
-                        users[event.user_id] = 0
-                        contacts = []
-                        for file in os.scandir():
-                            if file.name.endswith(".docx"):
-                                os.unlink(file.path)
-                        folder = 'photos' + str(event.user_id)
-                        for the_file in os.listdir(folder):
-                            file_path = os.path.join(folder, the_file)
-                            try:
-                                if os.path.isfile(file_path):
-                                    os.unlink(file_path)
-                            except Exception as e:
-                                print(e, file=stderr)
-                        users[event.user_id] = 0
-                    continue
-                if users[event.user_id] == 1235:
-                    try:
-                        name, surname, email = event.text.split()
-                    except:
-                        vko.messages.send(user_id=event.user_id,
-                                          random_id=random.randint(1, 10 ** 9),
-                                          message="Неправильный формат ввода! Напишите мне имя и фамилию через пробел и прикрепите свое фото.")
-                        continue
-
-                    photos = api1.messages.getById(message_ids=event.message_id, group_id=183112747)
-                    for i in range(len(photos['items'][0]['attachments'])):
-                        length = len(photos['items'][0]['attachments'][i]['photo']['sizes']) - 1
-                        urllib.request.urlretrieve(
-                            photos['items'][0]['attachments'][i]['photo']['sizes'][length]['url'],
-                            'base_of_photos/' + name + "_" + surname + "_" + email + "_" + str(i) +'.jpg')
-                    photo = face_recognition.load_image_file('base_of_photos/' + name + "_" + surname + "_" + email + "_" + str(i) + '.jpg')
-                    tmp = face_recognition.face_encodings(photo)
-                    if tmp != []:
-                        known_faces_encodings['base_of_photos/' + name + "_" + surname + "_" + email + "_" + str(i) + '.jpg'] = tmp[0]
-
-                    pickle.dump(known_faces_encodings, open("photos_prepared_for_face_recognition.dat", "wb"))
-                    vko.messages.send(user_id=event.user_id,
-                                      random_id=random.randint(1, 10 ** 9),
-                                      message=surname + ' ' + name + ' добавлен в базу данных!',
-                                      keyboard=base)
-
-                    users[event.user_id] = 0
-                    continue
                 if text == 'отменить отправку':
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
@@ -369,7 +192,7 @@ while True:
                     for file in os.scandir():
                         if file.name.endswith(".docx"):
                             os.unlink(file.path)
-                    folder = 'photos' + str(event.user_id)
+                    folder = 'photos/' + str(event.user_id)
                     for the_file in os.listdir(folder):
                         file_path = os.path.join(folder, the_file)
                         try:
@@ -378,6 +201,7 @@ while True:
                         except Exception as e:
                             print(e, file=stderr)
                     continue
+
 
                 if text == 'нет, спасибо':
                     f_group = False
@@ -392,7 +216,7 @@ while True:
                     contacts = []
                     news = ''
                     incorrect_command = False
-                    folder = 'photos' + str(event.user_id)
+                    folder = 'photos/' + str(event.user_id)
                     for the_file in os.listdir(folder):
                         file_path = os.path.join(folder, the_file)
                         try:
@@ -448,7 +272,7 @@ while True:
                         contacts = []
                         news = ''
                         incorrect_command = False
-                        folder = 'photos' + str(event.user_id)
+                        folder = 'photos/' + str(event.user_id)
                         for the_file in os.listdir(folder):
                             file_path = os.path.join(folder, the_file)
                             try:
@@ -459,7 +283,7 @@ while True:
                     incorrect_command = False
                     check_flag = False
                     continue
-                if check_flag and text != check:
+                if users[event.user_id] == 3 and check_flag and text != check:
                     check_flag = True
                     check = ''
                     for sy in range(5):
@@ -500,7 +324,7 @@ while True:
                     contacts = []
                     news = ''
                     incorrect_command = False
-                    folder = 'photos' + str(event.user_id)
+                    folder = 'photos/' + str(event.user_id)
                     for the_file in os.listdir(folder):
                         file_path = os.path.join(folder, the_file)
                         try:
@@ -517,7 +341,7 @@ while True:
                     try:
                         os.mkdir("photos/" + str(event.user_id))
                     except:
-                        continue
+                        pass
                     for i in range(len(photos['items'][0]['attachments'])):
 
                         if photos['items'][0]['attachments'][i]['type'] == 'photo':
@@ -606,6 +430,7 @@ while True:
                                                   inf['last_name'] + '!' + ' Я рад, что ты мне написала!',
                                           keyboard=base)
                     incorrect_command = False
+                    continue
                 if users[event.user_id] == 10:
                     x = True
                     if 'родителям' in text:
@@ -752,7 +577,7 @@ while True:
                         contacts = []
                         news = ''
                         incorrect_command = False
-                        folder = 'photos' + str(event.user_id)
+                        folder = 'photos/' + str(event.user_id)
                         for the_file in os.listdir(folder):
                             file_path = os.path.join(folder, the_file)
                             try:
