@@ -6,6 +6,7 @@ from random import random as rd
 from hashlib import sha1
 import urllib.request
 from sys import stderr
+from traceback import format_exc
 import mimetypes
 import smtplib
 from email import encoders
@@ -882,5 +883,7 @@ while True:
 
     except Exception as er:
         print(er, file=stderr)
+        print(format_exc(), file=stderr)
+        stderr.flush()
         users[event.user_id] = 0
         pass
