@@ -885,5 +885,6 @@ while True:
         print(er, file=stderr)
         print(format_exc(), file=stderr)
         stderr.flush()
+        open("log.dat", "w").write(er)
         users[event.user_id] = 0
         pass
