@@ -883,8 +883,6 @@ while True:
 
     except Exception as er:
         print(er, file=stderr)
-        print(format_exc(), file=stderr)
-        stderr.flush()
-        open("log.dat", "w").write(er)
+        open("log.dat", "w").write(str(er))
         users[event.user_id] = 0
         pass
