@@ -689,8 +689,7 @@ while True:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Кто будет участвовать в этом мероприятии?',
-                                      keyboard=create_keyb1(
-                                          ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С']))
+                                      keyboard=create_keyb1(['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С']))
 
                     users_report_filename[event.user_id].add_paragraph('3)Участники: ' + '\n')
                     n = 1
@@ -729,6 +728,8 @@ while True:
                             row_cells[2].text = downloading_google_sheet.sheet[i][1]
                             row_cells[3].text = downloading_google_sheet.sheet[i][3]
                             row_cells[4].text = downloading_google_sheet.sheet[i][4]
+                        elif downloading_google_sheet.sheet[i][0] == '':
+                            break
                     if fl:
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),

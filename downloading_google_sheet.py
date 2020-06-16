@@ -176,3 +176,4 @@ def tomorrow(text):
     if sum == '':
         sum = 'Завтра нет уроков!'
     return sum
+
