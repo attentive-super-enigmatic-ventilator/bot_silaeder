@@ -7,7 +7,7 @@ import pickle
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('authorization_data_for_google_api.json', scope)
 contacts = []
-google_sheet_name = open("google_sheet_name.dat").read().splitlines()[0]
+google_sheet_name = open("google_sheet_name.dat", "rb").read().decode("utf-8")
 d = {0:'Понедельник', 1:'Вторник', 2:'Среда', 3:'Четверг', 4:'Пятница', 5:'Суббота', 6:'Воскресенье'}
 
 def auth():
