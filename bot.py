@@ -805,6 +805,7 @@ while True:
                                       message='Я отправил Вам на почту ключ подтверждения. Отправьте его мне, чтобы успешно завершить рассылку',
                                       keyboard=stop)
                     users[event.user_id] = 11111
+                    continue
                 if text == check and users[event.user_id] == 11111:
 
                     vko.messages.send(user_id=event.user_id,
@@ -815,7 +816,7 @@ while True:
                     os.remove(report_file_name)
                     incorrect_command = False
                     users[event.user_id] = 0
-
+                    continue
                 if incorrect_command:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
