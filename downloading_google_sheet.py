@@ -4,6 +4,7 @@ import datetime
 
 import pickle
 
+
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('authorization_data_for_google_api.json', scope)
 contacts = []
@@ -13,10 +14,16 @@ d = {0:'Понедельник', 1:'Вторник', 2:'Среда', 3:'Четв
 def auth():
     global sheet
     global client
+    global classes_names
     client = gspread.authorize(creds)
     sheet = client.open(google_sheet_name).worksheet('контакты учеников')
     sheet = sheet.get_all_values()
+    classes_names = []
+    for i in sheet:
+        if i[0] not in classes_names and i[0] != ' ':
+            classes_names.append(i[0])
 
+    return classes_names
     
 def clear():
     global contacts
@@ -176,3 +183,4 @@ def tomorrow(text):
     if sum == '':
         sum = 'Завтра нет уроков!'
     return sum
+
