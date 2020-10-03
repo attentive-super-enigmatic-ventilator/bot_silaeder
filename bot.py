@@ -112,18 +112,29 @@ back = back.get_keyboard()
 
 def create_keyb1(buttons):
     keyboard = VkKeyboard(one_time=True)
+    sh = 0
     for b in buttons:
+        sh += 1
+        if sh == 4:
+            sh = 0
+            keyboard.add_line()
         if b == 'new_line':
             keyboard.add_line()
         else:
             keyboard.add_button(b, color=VkKeyboardColor.POSITIVE)
+
     keyboard = keyboard.get_keyboard()
     return keyboard
 
 
 def create_keyb(buttons):
     keyboard = VkKeyboard(one_time=True)
+    sh = 0
     for b in buttons:
+        sh += 1
+        if sh == 4:
+            sh = 0
+            keyboard.add_line()
         if b == 'new_line':
             keyboard.add_line()
         else:
@@ -466,7 +477,7 @@ while True:
                                                   ' контактам, то нажмите на кнопку "Отправить ранее выбранным контактам".' +
                                                   '\n' + 'Для отмены отправки нажмите на кнопку "Отменить отправку"',
                                           keyboard=create_keyb(
-                                              ['5 С', '6 С', '7 С', '8 С', 'new_line', '8 Т', '8 Л', '10 С', 'new_line', 'Учителям',
+                                              downloading_google_sheet.auth() + ['new_line', 'Учителям',
                                                'Отправить ранее выбранным контактам']))
                         continue
                 if users[event.user_id] == 3:
@@ -516,7 +527,7 @@ while True:
                                           random_id=random.randint(1, 10 ** 9),
                                           message='Я Вас не понимаю, используйте кнопки ниже!',
                                           keyboard=create_keyb(
-                                              ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
+                                              downloading_google_sheet.auth() + ['new_line',
                                                'Учителям', 'Абсолютно всем']))
                         continue
                     if to_all:
@@ -531,7 +542,7 @@ while True:
                                                   'выбранным контактам, то нажмите на кнопку "Отправить ранее выбранным контактам".' +
                                                   '\n' + 'Для отмены отправки нажмите на кнопку "Отменить отправку"',
                                           keyboard=create_keyb(
-                                              ['5 С', '6 С', '7 С', '8 С', 'new_line', '8 Т', '8 Л', '10 С', 'new_line',
+                                              downloading_google_sheet.auth() + ['new_line',
                                                'Учителям',
                                                'Отправить ранее выбранным контактам']))
                 if text == 'почта' and users[event.user_id] == 2 or one_more_flag:
@@ -543,7 +554,7 @@ while True:
                                               '"маме <Имя ребенка> <Фамилия ребенка>" или ' +
                                               '"отцу <Имя ребенка> <Фамилия ребенка>".',
                                       keyboard=create_keyb(
-                                          ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
+                                          downloading_google_sheet.auth() + ['new_line',
                                            'Учителям', 'Абсолютно всем']))
                     users[event.user_id] = 3
                     incorrect_command = False
@@ -689,7 +700,12 @@ while True:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Кто будет участвовать в этом мероприятии?',
+<<<<<<< HEAD
                                       keyboard=create_keyb1(['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С']))
+=======
+                                      keyboard=create_keyb1(
+                                          downloading_google_sheet.auth()))
+>>>>>>> 24adafff31665af4384feb9dd38be0fe170e492e
 
                     users_report_filename[event.user_id].add_paragraph('3)Участники: ' + '\n')
                     n = 1
@@ -735,14 +751,14 @@ while True:
                                           random_id=random.randint(1, 10 ** 9),
                                           message='Кто еще будет участвовать в этом мероприятии?',
                                           keyboard=create_keyb1(
-                                              ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
-                                               'Все участники уже перечислены']))
+                                              downloading_google_sheet.auth() +
+                                                ['Все участники уже перечислены']))
                     else:
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 10 ** 9),
                                           message='Используйте кнопки ниже, я Вас не понимаю!', keyboard=create_keyb1(
-                                              ['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С', 'new_line',
-                                               'Все участники уже перечислены']))
+                                            downloading_google_sheet.auth() +
+                                            ['Все участники уже перечислены']))
                     incorrect_command = False
 
                 if users[event.user_id] == 77:
@@ -790,6 +806,25 @@ while True:
 
                     vk_session = vk_api.VkApi(token=tokens[0])
                     vko = vk_session.get_api()
+                    for sy in range(5):
+                        check += random.choice(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'])
+                    mail = smtplib.SMTP('smtp.mail.ru', 587)
+                    msg = MIMEMultipart()
+                    msg['From'] = mail1[0]
+                    msg['Subject'] = 'Код подтверждения'
+                    msg.attach(MIMEText(check, 'plain'))
+                    mail.starttls(context=ssl.create_default_context())
+                    mail.login(str(msg['From']), str(mail1[1]))
+                    mail.send_message(msg, to_addrs=admin_mails[admins.index(str(event.user_id))])
+                    mail.quit()
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Я отправил Вам на почту ключ подтверждения. Отправьте его мне, чтобы успешно завершить рассылку',
+                                      keyboard=stop)
+                    users[event.user_id] = 11111
+                    continue
+                if text == check and users[event.user_id] == 11111:
+
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Держите!',
@@ -798,7 +833,7 @@ while True:
                     os.remove(report_file_name)
                     incorrect_command = False
                     users[event.user_id] = 0
-
+                    continue
                 if incorrect_command:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
@@ -838,7 +873,7 @@ while True:
                                       keyboard=create_keyb2(['Вся неделя', "Сегодня", "Завтра"]))
 
                 if users[str(event.user_id)] == 1:
-                    if text in ["5с", "6с", "7с", "8с", "8т", "8л","10с"]:
+                    if text in downloading_google_sheet.auth():
                         sum = downloading_google_sheet.check_timetable(text=text)
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 109),
@@ -846,7 +881,7 @@ while True:
                                           keyboard=create_keyb1(['Узнать расписание']))
 
                 if users[str(event.user_id)] == 2:
-                    if text in ["5с", "6с", "7с", "8с", "8т", "8л","10с"]:
+                    if event.text in downloading_google_sheet.auth():
                         sum = downloading_google_sheet.today(text=text)
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 109),
@@ -854,7 +889,7 @@ while True:
                                           keyboard=create_keyb1(['Узнать расписание']))
 
                 if users[str(event.user_id)] == 3:
-                    if text in ["5с", "6с", "7с", "8с", "8т", "8л","10с"]:
+                    if event.text in downloading_google_sheet.auth():
                         sum = downloading_google_sheet.tomorrow(text=text)
                         vko.messages.send(user_id=event.user_id,
                                           random_id=random.randint(1, 109),
@@ -865,22 +900,22 @@ while True:
                     users[str(event.user_id)] = 2
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 109),
-                                      message='Расписание prдля какого класса вас интересует?',
-                                      keyboard=create_keyb2(["5С", "6С", "7С", "new_line", "8С", "8Л", "8Т", "10С"]))
+                                      message='Расписание для какого класса вас интересует?',
+                                      keyboard=create_keyb2(downloading_google_sheet.classes_names))
 
                 if text == "завтра":
                     users[str(event.user_id)] = 3
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 109),
                                       message='Расписание для какого класса вас интересует?',
-                                      keyboard=create_keyb2(["5С", "6С", "7С", "new_line", "8С", "8Л", "8Т", "10С"]))
+                                      keyboard=create_keyb2(downloading_google_sheet.auth()))
 
                 if text == "вся неделя":
                     users[str(event.user_id)] = 1
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 109),
                                       message='Расписание для какого класса вас интересует?',
-                                      keyboard=create_keyb2(["5С", "6С", "7С", "new_line", "8С", "8Л", "8Т", "10С"]))
+                                      keyboard=create_keyb2(downloading_google_sheet.auth()))
 
     except Exception as er:
         print(er, file=stderr)
