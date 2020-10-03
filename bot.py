@@ -700,12 +700,8 @@ while True:
                     vko.messages.send(user_id=event.user_id,
                                       random_id=random.randint(1, 10 ** 9),
                                       message='Кто будет участвовать в этом мероприятии?',
-<<<<<<< HEAD
-                                      keyboard=create_keyb1(['5 С', '6 С', '7 С', 'new_line', '8 Т', '8 С', '8 Л', '10 С']))
-=======
                                       keyboard=create_keyb1(
                                           downloading_google_sheet.auth()))
->>>>>>> 24adafff31665af4384feb9dd38be0fe170e492e
 
                     users_report_filename[event.user_id].add_paragraph('3)Участники: ' + '\n')
                     n = 1
@@ -833,6 +829,26 @@ while True:
                     os.remove(report_file_name)
                     incorrect_command = False
                     users[event.user_id] = 0
+                    continue
+                elif text != check:
+                    vk_session = vk_api.VkApi(token=tokens[0])
+                    vko = vk_session.get_api()
+                    for sy in range(5):
+                        check += random.choice(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'])
+                    mail = smtplib.SMTP('smtp.mail.ru', 587)
+                    msg = MIMEMultipart()
+                    msg['From'] = mail1[0]
+                    msg['Subject'] = 'Код подтверждения'
+                    msg.attach(MIMEText(check, 'plain'))
+                    mail.starttls(context=ssl.create_default_context())
+                    mail.login(str(msg['From']), str(mail1[1]))
+                    mail.send_message(msg, to_addrs=admin_mails[admins.index(str(event.user_id))])
+                    mail.quit()
+                    vko.messages.send(user_id=event.user_id,
+                                      random_id=random.randint(1, 10 ** 9),
+                                      message='Неправильный код подтверждения, я отправил Вам на почту новый. Отправьте его мне, чтобы успешно завершить рассылку',
+                                      keyboard=stop)
+                    users[event.user_id] = 11111
                     continue
                 if incorrect_command:
                     vko.messages.send(user_id=event.user_id,
